@@ -26,16 +26,4 @@ class DocumentProcessor extends AbstractDataProcessor
 
         return $this->documentService->addDocument($data);
     }
-
-    protected function removeItem($identifier, $data, array $filters): void
-    {
-        assert($data instanceof Document);
-
-        $this->documentService->removeDocument($data);
-    }
-
-    protected function isUserGrantedOperationAccess(int $operation): bool
-    {
-        return $this->isAuthenticated();
-    }
 }

@@ -7,7 +7,6 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\DocumentVersionInfo;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Rest\AbstractDataProvider;
-use http\Exception\RuntimeException;
 
 /**
  * @extends AbstractDataProvider<DocumentVersionInfo>

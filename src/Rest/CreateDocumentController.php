@@ -4,26 +4,30 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 
-use ApiPlatform\Metadata\ApiResource;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Uid\Uuid;
 
 class CreateDocumentController extends AbstractController
 {
-    private DocumentService $documentService;
-
-    public function __construct(DocumentService $documentService)
+    public function __construct(
+        private readonly DocumentService $documentService,
+        private readonly AuthorizationService $authorizationService)
     {
-        $this->documentService = $documentService;
     }
 
     public function __invoke(Request $request): Document
     {
+        if (!$this->authorizationService->isAuthenticated()) {
+            throw new HttpException(Response::HTTP_UNAUTHORIZED);
+        }
+
         $name = $request->request->get('name'); // TODO: validate name
         $documentType = $request->request->get('documentType'); // TODO: validate document type
         $content = $request->request->get('content'); // TODO: validate content

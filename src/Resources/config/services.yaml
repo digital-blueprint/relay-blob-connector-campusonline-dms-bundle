@@ -9,7 +9,6 @@ services:
     autowire: true
     autoconfigure: true
 
-#  Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\ErrorNormalizer:
-#    autowire: true
-#    autoconfigure: true
-#    tags: [{'name' : 'serializer.normalizer', priority: '-500'}]
+  Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService:
+    autowire: true
+    autoconfigure: true

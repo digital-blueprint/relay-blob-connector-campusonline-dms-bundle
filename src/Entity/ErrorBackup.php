@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\Metadata\ErrorResource;
+// use ApiPlatform\Metadata\ErrorResource;
 use ApiPlatform\Metadata\Exception\ProblemExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ErrorResource]
+// #[ErrorResource]
 class ErrorBackup extends \Exception implements ProblemExceptionInterface, HttpExceptionInterface
 {
     #[Groups(['jsonld', 'jsonproblem'])]
