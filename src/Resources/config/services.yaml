@@ -1,0 +1,15 @@
+services:
+  Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\:
+    resource: '../../Rest'
+    autowire: true
+    autoconfigure: true
+
+  Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\:
+    resource: '../../Service'
+    autowire: true
+    autoconfigure: true
+
+#  Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\ErrorNormalizer:
+#    autowire: true
+#    autoconfigure: true
+#    tags: [{'name' : 'serializer.normalizer', priority: '-500'}]
