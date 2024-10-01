@@ -7,13 +7,14 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
+use Dbp\Relay\CoreBundle\Rest\CustomControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CreateDocumentVersionController extends AbstractController
 {
+    use CustomControllerTrait;
+
     public function __construct(
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
@@ -22,12 +23,10 @@ class CreateDocumentVersionController extends AbstractController
 
     public function __invoke(Request $request, string $uid): ?Document
     {
-        if (!$this->authorizationService->isAuthenticated()) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED);
-        }
+        $this->requireAuthentication();
 
-        $content = $request->get('content');
+        $uploadedFile = $request->files->get('content'); // TODO: validate uploaded file
 
-        return $this->documentService->addDocumentVersion($uid, $content);
+        return $this->documentService->addDocumentVersion($uid, $uploadedFile);
     }
 }

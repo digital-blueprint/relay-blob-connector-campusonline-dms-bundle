@@ -158,10 +158,6 @@ class Document
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output', 'BlobConnectorCampusonlineDmsDocument:input'])]
     private ?array $metaData = null;
 
-    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
-    #[Groups(['BlobConnectorCampusonlineDmsDocument:input'])]
-    private ?string $content = null;
-
     #[ApiProperty(iris: ['https://schema.org/version'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
     private ?DocumentVersionInfo $latestContent = null;
@@ -204,16 +200,6 @@ class Document
     public function setMetaData(?array $metaData): void
     {
         $this->metaData = $metaData;
-    }
-
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(?string $content): void
-    {
-        $this->content = $content;
     }
 
     public function getLatestContent(): ?DocumentVersionInfo

@@ -8,14 +8,15 @@ use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationServ
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Dbp\Relay\CoreBundle\Rest\CustomControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Uid\Uuid;
 
 class CreateDocumentController extends AbstractController
 {
+    use CustomControllerTrait;
+
     public function __construct(
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
@@ -24,13 +25,11 @@ class CreateDocumentController extends AbstractController
 
     public function __invoke(Request $request): Document
     {
-        if (!$this->authorizationService->isAuthenticated()) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED);
-        }
+        $this->requireAuthentication();
 
         $name = $request->request->get('name'); // TODO: validate name
         $documentType = $request->request->get('documentType'); // TODO: validate document type
-        $content = $request->request->get('content'); // TODO: validate content
+        $uploadedFile = $request->files->get('content'); // TODO: validate uploaded file
 
         $metaDataArray = null;
         $metaData = $request->request->get('metaData'); // TODO: validate metadata
@@ -43,12 +42,10 @@ class CreateDocumentController extends AbstractController
         }
 
         $document = new Document();
-        $document->setUid((string) Uuid::v7());
         $document->setName($name);
         $document->setDocumentType($documentType);
-        $document->setContent($content);
         $document->setMetaData($metaDataArray);
 
-        return $this->documentService->addDocument($document);
+        return $this->documentService->addDocument($document, $uploadedFile);
     }
 }
