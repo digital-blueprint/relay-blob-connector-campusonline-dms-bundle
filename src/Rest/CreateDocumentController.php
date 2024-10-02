@@ -7,11 +7,11 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
-use Dbp\Relay\CoreBundle\Exception\ApiError;
+use Dbp\Relay\CoreBundle\Helpers\Tools;
 use Dbp\Relay\CoreBundle\Rest\CustomControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CreateDocumentController extends AbstractController
 {
@@ -23,22 +23,29 @@ class CreateDocumentController extends AbstractController
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function __invoke(Request $request): Document
     {
         $this->requireAuthentication();
         $this->authorizationService->denyAccessUnlessHasRoleUser();
 
-        $name = $request->request->get('name'); // TODO: validate name
-        $documentType = $request->request->get('documentType'); // TODO: validate document type
-        $uploadedFile = $request->files->get('content'); // TODO: validate uploaded file
+        $name = $request->request->get('name');
+        if (Tools::isNullOrEmpty($name)) {
+            throw new BadRequestHttpException('parameter \'name\' must not be empty');
+        }
+        $documentType = $request->request->get('documentType'); // TODO: is documentType required?
+        $uploadedFile = $request->files->get('content');
+        Common::ensureUpdatedFileIsValid($uploadedFile);
 
         $metaDataArray = null;
-        $metaData = $request->request->get('metaData'); // TODO: validate metadata
+        $metaData = $request->request->get('metaData');
         if ($metaData !== null) {
             try {
                 $metaDataArray = json_decode($metaData, true, 512, JSON_THROW_ON_ERROR);
             } catch (\JsonException) {
-                throw ApiError::withDetails(Response::HTTP_BAD_REQUEST, 'field \'metaData\' is invalid json', 'TODO', ['metaData']);
+                throw new BadRequestHttpException('parameter \'metaData\' is invalid json');
             }
         }
 

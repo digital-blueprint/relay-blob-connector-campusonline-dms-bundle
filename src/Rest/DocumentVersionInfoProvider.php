@@ -22,6 +22,9 @@ class DocumentVersionInfoProvider extends AbstractDataProvider
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function getItemById(string $id, array $filters = [], array $options = []): ?DocumentVersionInfo
     {
         return $this->documentService->getDocumentVersionInfo($id);

@@ -22,6 +22,9 @@ class DocumentProvider extends AbstractDataProvider
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function getItemById(string $id, array $filters = [], array $options = []): ?Document
     {
         return $this->documentService->getDocument($id);
