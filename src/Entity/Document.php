@@ -30,7 +30,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: DocumentProvider::class
         ),
         new Get(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/version/{uid}',
+            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/version/{uid}',
             outputFormats: [
                 'octet_stream' => 'application/octet-stream',
                 'jsonproblem' => 'application/problem+json',
@@ -38,6 +38,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             controller: GetDocumentVersionContentController::class,
             openapiContext: [
                 'tags' => ['Campusonline DMS'],
+                'summary' => 'Retrieves the file content for a BlobConnectorCampusonlineDmsDocumentVersionInfo resource',
                 'responses' => [
                     '200' => [
                         'content' => [
@@ -122,6 +123,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             controller: CreateDocumentVersionController::class,
             openapiContext: [
                 'tags' => ['Campusonline DMS'],
+                'summary' => 'Creates a new version for a BlobConnectorCampusonlineDmsDocument resource',
                 'requestBody' => [
                     'content' => [
                         'application/octet-stream' => [

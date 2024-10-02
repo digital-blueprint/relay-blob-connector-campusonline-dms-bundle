@@ -26,6 +26,7 @@ class CreateDocumentController extends AbstractController
     public function __invoke(Request $request): Document
     {
         $this->requireAuthentication();
+        $this->authorizationService->denyAccessUnlessHasRoleUser();
 
         $name = $request->request->get('name'); // TODO: validate name
         $documentType = $request->request->get('documentType'); // TODO: validate document type

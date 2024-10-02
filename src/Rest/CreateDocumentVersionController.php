@@ -24,6 +24,7 @@ class CreateDocumentVersionController extends AbstractController
     public function __invoke(Request $request, string $uid): ?Document
     {
         $this->requireAuthentication();
+        $this->authorizationService->denyAccessUnlessHasRoleUser();
 
         $uploadedFile = $request->files->get('content'); // TODO: validate uploaded file
 

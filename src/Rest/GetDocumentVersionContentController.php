@@ -21,11 +21,14 @@ class GetDocumentVersionContentController extends AbstractController
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function __invoke(Request $request, string $uid): Response
     {
         $this->requireAuthentication();
+        $this->authorizationService->denyAccessUnlessHasRoleUser();
 
-        // TODO: get blob file with given version and return its content
         return $this->documentService->getDocumentVersionBinaryFileResponse($uid);
     }
 }

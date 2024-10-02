@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\DocumentVersionInfo;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Rest\AbstractDataProvider;
@@ -15,11 +16,10 @@ class DocumentVersionInfoProvider extends AbstractDataProvider
 {
     protected static string $identifierName = 'uid';
 
-    private DocumentService $documentService;
-
-    public function __construct(DocumentService $placeService)
+    public function __construct(
+        private readonly DocumentService $documentService,
+        private readonly AuthorizationService $authorizationService)
     {
-        $this->documentService = $placeService;
     }
 
     protected function getItemById(string $id, array $filters = [], array $options = []): ?DocumentVersionInfo
@@ -32,8 +32,8 @@ class DocumentVersionInfoProvider extends AbstractDataProvider
         throw new \RuntimeException('not available');
     }
 
-    protected function isUserGrantedOperationAccess(int $operation): bool
+    protected function isCurrentUserGrantedOperationAccess(int $operation): bool
     {
-        return $this->isAuthenticated();
+        return $this->authorizationService->hasRoleUser();
     }
 }
