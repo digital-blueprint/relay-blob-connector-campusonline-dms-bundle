@@ -6,10 +6,12 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\CreateDocumentController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\CreateDocumentVersionController;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentProcessor;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentProvider;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\GetDocumentVersionContentController;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -136,6 +138,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 ],
             ],
             deserialize: false
+        ),
+        new Delete(
+            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/{uid}',
+            openapiContext: [
+                'tags' => ['Campusonline DMS'],
+            ],
+            provider: DocumentProvider::class,
+            processor: DocumentProcessor::class
         ),
     ],
     normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:output']],
