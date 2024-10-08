@@ -24,6 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: '/co-dp-dms-adapter-d3/api/documents/{uid}',
             outputFormats: [
                 'json' => 'application/json',
+                'jsonld' => 'application/ld+json',
                 'jsonproblem' => 'application/problem+json',
             ],
             openapiContext: [
