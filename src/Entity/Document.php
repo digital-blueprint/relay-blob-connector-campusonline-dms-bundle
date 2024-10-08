@@ -76,7 +76,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Post(
             uriTemplate: '/co-dp-dms-adapter-d3/api/documents',
-            inputFormats: ['form_data' => 'multipart/form-data'],
+            inputFormats: ['multipart' => 'multipart/form-data'],
             outputFormats: [
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',

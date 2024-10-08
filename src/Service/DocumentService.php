@@ -166,7 +166,7 @@ class DocumentService
         }
 
         try {
-            $metadata = json_encode($metadata, JSON_THROW_ON_ERROR);
+            $metadataEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
         } catch (\Exception $jsonException) {
             throw new \Exception($jsonException->getMessage(), 0, $jsonException);
         }
@@ -176,7 +176,7 @@ class DocumentService
         $fileData->setFileName($document->getName());
         $fileData->setPrefix($document->getUid());
         $fileData->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
-        $fileData->setMetadata($metadata);
+        $fileData->setMetadata($metadataEncoded);
 
         try {
             $fileData = $this->fileApi->addFile($fileData, self::BUCKET_ID);
@@ -184,13 +184,7 @@ class DocumentService
             throw self::createException($fileApiException);
         }
 
-        $documentVersionInfo = new DocumentVersionInfo();
-        $documentVersionInfo->setUid($fileData->getIdentifier());
-        $documentVersionInfo->setVersion($versionNumber);
-        $documentVersionInfo->setMediaType($fileData->getMimeType());
-        $documentVersionInfo->setSize($fileData->getFileSize());
-
-        return $documentVersionInfo;
+        return $this->createDocumentVersionInfoFromFileData($fileData, $metadata);
     }
 
     /**
