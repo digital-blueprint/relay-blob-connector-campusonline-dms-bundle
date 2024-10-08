@@ -9,6 +9,7 @@ use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Dbp\Relay\CoreBundle\Rest\AbstractDataProvider;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * @extends AbstractDataProvider<Document>
@@ -35,9 +36,13 @@ class DocumentProvider extends AbstractDataProvider
         } elseif ($id === 'apierror500') {
             throw new ApiError(500, 'something went wrong');
         } elseif ($id === 'apierror500wd') {
-            throw ApiError::withDetails(502, 'campusonline failed', 'campusonline-dms:campusonline-failed', ['foo' => 'bar']);
+            throw ApiError::withDetails(500, 'campusonline failed', 'campusonline-dms:campusonline-failed', ['foo' => 'bar']);
         } elseif ($id === 'apierror418wd') {
             throw ApiError::withDetails(418, 'no tea today', 'campusonline-dms:no-tea-today', ['no' => null]);
+        } elseif ($id === 'http418') {
+            throw new HttpException(418, 'campusonline failed');
+        } elseif ($id === 'http500') {
+            throw new HttpException(500, 'no tea today');
         }
 
         return $this->documentService->getDocument($id);
