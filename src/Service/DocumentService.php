@@ -129,8 +129,6 @@ class DocumentService
     {
         $file = new File();
         $file->setUid($uid);
-        $file->setFileType('pdf');
-        $file->setMetaData(['foo' => 'bar']);
 
         return $file;
     }
