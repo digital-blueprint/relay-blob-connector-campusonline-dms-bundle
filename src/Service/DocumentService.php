@@ -9,10 +9,10 @@ use Dbp\Relay\BlobBundle\Api\FileApiException;
 use Dbp\Relay\BlobBundle\Entity\FileData;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\DocumentVersionInfo;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentService
@@ -20,11 +20,12 @@ class DocumentService
     private const DOCUMENT_VERSION_METADATA_TYPE = 'document_version'; // config value?
     private const BUCKET_ID = 'campusonline-dms-bucket';
 
-    public function __construct(private readonly FileApi $fileApi)
-    {
-    }
+    private const DOCUMENT_VERSION_METADATA_METADATA_KEY = 'doc_version_metadata';
+    private const DOCUMENT_METADATA_METADATA_KEY = 'doc_metadata';
+    private const VERSION_NUMBER_METADATA_KEY = 'version';
+    private const DOCUMENT_TYPE_METADATA_KEY = 'doc_type';
 
-    public function setConfig(array $config): void
+    public function __construct(private readonly FileApi $fileApi)
     {
     }
 
@@ -42,11 +43,11 @@ class DocumentService
                 }
             }
         } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException);
+            throw self::createException($fileApiException, 'document', $uid);
         }
 
         if ($latestDocumentVersionFileData === null) {
-            throw new NotFoundHttpException();
+            throw new Error(Response::HTTP_NOT_FOUND, 'document not found', 'RESOURCE_NOT_FOUND', $uid);
         }
 
         $metadata = $this->getMetadataFromFileData($latestDocumentVersionFileData);
@@ -54,10 +55,8 @@ class DocumentService
 
         $document = new Document();
         $document->setUid($uid);
-        $document->setLatestContent($documentVersionInfo);
-        $document->setName($latestDocumentVersionFileData->getFileName());
-        $document->setMetaData($metadata['metadata']);
-        $document->setDocumentType($metadata['document_type']);
+        $document->setLatestVersion($documentVersionInfo);
+        $document->setMetaData($metadata[self::DOCUMENT_METADATA_METADATA_KEY] ?? null);
 
         return $document;
     }
@@ -65,10 +64,12 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function addDocument(Document $document, UploadedFile $uploadedFile): Document
+    public function addDocument(Document $document, UploadedFile $uploadedFile, string $name,
+        ?array $documentVersionMetadata = null, ?string $documentType = null): Document
     {
         $document->setUid((string) Uuid::v7());
-        $document->setLatestContent($this->createDocumentVersion($document, $uploadedFile));
+        $document->setLatestVersion($this->createDocumentVersion(
+            $document, $uploadedFile, $name, $documentVersionMetadata, $documentType));
 
         return $document;
     }
@@ -76,26 +77,40 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function removeDocument(string $uid, Document $document): void
+    public function removeDocument(string $uid): void
     {
         try {
             foreach ($this->getDocumentVersionFileDataCollection($uid) as $documentVersionFileData) {
                 $this->fileApi->removeFile($documentVersionFileData->getIdentifier());
             }
         } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException);
+            throw self::createException($fileApiException, 'document', $uid);
         }
     }
 
     /**
      * @throws \Exception
      */
-    public function addDocumentVersion(string $documentUid, UploadedFile $uploadedFile): ?Document
+    public function addDocumentVersion(string $documentUid, UploadedFile $uploadedFile,
+        string $name, ?array $documentVersionMetadata = null, ?string $documentType = null): ?Document
     {
         $document = $this->getDocument($documentUid);
-        $document->setLatestContent($this->createDocumentVersion($document, $uploadedFile, $document->getLatestContent()->getVersion()));
+        $document->setLatestVersion($this->createDocumentVersion($document, $uploadedFile, $name,
+            $documentVersionMetadata, $documentType, $document->getLatestVersion()->getVersionNumber()));
 
         return $document;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function removeDocumentVersion(string $uid): void
+    {
+        try {
+            $this->fileApi->removeFile($uid);
+        } catch (FileApiException $fileApiException) {
+            throw self::createException($fileApiException, 'document version', $uid);
+        }
     }
 
     /**
@@ -106,7 +121,7 @@ class DocumentService
         try {
             $documentVersionFileData = $this->fileApi->getFile($uid);
         } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException);
+            throw self::createException($fileApiException, 'document version', $uid);
         }
 
         return $this->createDocumentVersionInfoFromFileData($documentVersionFileData,
@@ -121,7 +136,7 @@ class DocumentService
         try {
             return $this->fileApi->getBinaryFileResponse($uid);
         } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException);
+            throw self::createException($fileApiException, 'document version', $uid);
         }
     }
 
@@ -147,31 +162,39 @@ class DocumentService
         return $file;
     }
 
+    public function removeFile(string $uid, File $file): void
+    {
+    }
+
     /**
      * @throws \Exception
      */
-    private function createDocumentVersion(Document $document, UploadedFile $uploadedFile, ?string $lastVersion = null): DocumentVersionInfo
+    private function createDocumentVersion(Document $document, UploadedFile $uploadedFile, string $name,
+        ?array $documentVersionMetadata = null, ?string $documentType = null, ?string $lastVersion = null): DocumentVersionInfo
     {
         $versionNumber = $lastVersion ? strval(intval($lastVersion) + 1) : '1';
 
         $metadata = [];
-        $metadata['version'] = $versionNumber;
-        if ($document->getDocumentType() !== null) {
-            $metadata['document_type'] = $document->getDocumentType();
-        }
+        $metadata[self::VERSION_NUMBER_METADATA_KEY] = $versionNumber;
         if ($document->getMetaData() !== null) {
-            $metadata['metadata'] = $document->getMetaData();
+            $metadata[self::DOCUMENT_METADATA_METADATA_KEY] = $document->getMetaData();
+        }
+        if ($documentVersionMetadata !== null) {
+            $metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] = $documentVersionMetadata;
+        }
+        if ($documentType !== null) {
+            $metadata[self::DOCUMENT_TYPE_METADATA_KEY] = $documentType;
         }
 
         try {
             $metadataEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
         } catch (\Exception $jsonException) {
-            throw new \Exception($jsonException->getMessage(), 0, $jsonException);
+            throw new \RuntimeException(sprintf('encoding file metadata failed: %s', $jsonException->getMessage()));
         }
 
         $fileData = new FileData();
         $fileData->setFile($uploadedFile);
-        $fileData->setFileName($document->getName());
+        $fileData->setFileName($name);
         $fileData->setPrefix($document->getUid());
         $fileData->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
         $fileData->setMetadata($metadataEncoded);
@@ -192,9 +215,11 @@ class DocumentService
     {
         $documentVersionInfo = new DocumentVersionInfo();
         $documentVersionInfo->setUid($fileData->getIdentifier());
-        $documentVersionInfo->setVersion($metadata['version']);
+        $documentVersionInfo->setName($fileData->getFileName());
+        $documentVersionInfo->setVersionNumber($metadata[self::VERSION_NUMBER_METADATA_KEY]);
         $documentVersionInfo->setMediaType($fileData->getMimeType());
         $documentVersionInfo->setSize($fileData->getFileSize());
+        $documentVersionInfo->setMetaData($metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] ?? null);
 
         return $documentVersionInfo;
     }
@@ -205,9 +230,9 @@ class DocumentService
     private function getMetadataFromFileData(FileData $fileData): array
     {
         try {
-            return json_decode($fileData->getMetadata(), true, JSON_THROW_ON_ERROR);
+            return json_decode($fileData->getMetadata(), true, flags: JSON_THROW_ON_ERROR);
         } catch (\Exception $jsonException) {
-            throw new \Exception('metadata is invalid JSON', 0, $jsonException);
+            throw new \RuntimeException(sprintf('decoding file metadata failed: %s', $jsonException->getMessage()));
         }
     }
 
@@ -221,10 +246,13 @@ class DocumentService
         return $this->fileApi->getFiles(self::BUCKET_ID, [FileApi::PREFIX_OPTION => $uid]);
     }
 
-    private static function createException(FileApiException $fileApiException): \Exception
+    private static function createException(FileApiException $fileApiException, ?string $resourceType = null,
+        ?string $resourceUid = null): Error
     {
         return $fileApiException->getCode() === FileApiException::FILE_NOT_FOUND ?
-            new NotFoundHttpException() :
-            new \Exception($fileApiException->getMessage(), $fileApiException->getCode(), $fileApiException);
+            new Error(Response::HTTP_NOT_FOUND,
+                ($resourceType ?? 'resource').' not found', 'RESOURCE_NOT_FOUND', $resourceUid) :
+            new Error(Response::HTTP_INTERNAL_SERVER_ERROR,
+                $fileApiException->getMessage(), strval($fileApiException->getCode()), $resourceUid);
     }
 }

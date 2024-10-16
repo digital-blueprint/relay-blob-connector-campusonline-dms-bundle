@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization;
 
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\DependencyInjection\Configuration;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\CoreBundle\Authorization\AbstractAuthorizationService;
-use Dbp\Relay\CoreBundle\Exception\ApiError;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthorizationService extends AbstractAuthorizationService
 {
+    /**
+     * @throws Error
+     */
     public function denyAccessUnlessHasRoleUser(): void
     {
         if (!$this->hasRoleUser()) {
-            throw ApiError::withDetails(Response::HTTP_FORBIDDEN);
+            throw new Error(Response::HTTP_FORBIDDEN);
         }
     }
 

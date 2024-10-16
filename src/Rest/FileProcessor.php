@@ -8,6 +8,7 @@ use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationServ
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\File;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Rest\AbstractDataProcessor;
+use Symfony\Component\HttpFoundation\Response;
 
 class FileProcessor extends AbstractDataProcessor
 {
@@ -26,11 +27,20 @@ class FileProcessor extends AbstractDataProcessor
         return $this->documentService->addFile($data);
     }
 
-    protected function replaceItem(mixed $identifier, mixed $data, mixed $previousData, array $filters): File
+    protected function replaceItem(mixed $identifier, mixed $data, mixed $previousData, array $filters): Response
     {
         assert($data instanceof File);
 
-        return $this->documentService->replaceFile($identifier, $data);
+        $this->documentService->replaceFile($identifier, $data);
+
+        return new Response(status: 204); // API spec defines 204 'no-content' for success
+    }
+
+    protected function removeItem(mixed $identifier, mixed $data, array $filters): void
+    {
+        assert($data instanceof File);
+
+        $this->documentService->removeFile($identifier, $data);
     }
 
     protected function isCurrentUserGrantedOperationAccess(int $operation): bool

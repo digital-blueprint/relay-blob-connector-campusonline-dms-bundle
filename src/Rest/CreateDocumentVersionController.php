@@ -6,12 +6,12 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Rest\CustomControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CreateDocumentVersionController extends AbstractController
 {
@@ -31,17 +31,24 @@ class CreateDocumentVersionController extends AbstractController
         $this->requireAuthentication();
         $this->authorizationService->denyAccessUnlessHasRoleUser();
 
-        // create a fake UploadedFile since the file is required to be
-        // uploaded as a binary stream by the API definition.
-        // we use the 'test' flag of UploadedFile to skip the internal validation (bit hacky).
-        // the alternative would be to change blob to work with File instead of UploadedFile
-        $filesystem = new Filesystem();
-        $tempFilePath = $filesystem->tempnam('/tmp', 'php');
-        file_put_contents($tempFilePath, $request->getContent(false));
-        $uploadedFile = new UploadedFile($tempFilePath, 'unknown', null, null, true);
+        $name = $request->request->get('name');
+        $documentType = $request->request->get('document_type');
 
+        $uploadedFile = $request->files->get('binary_content');
         Common::ensureUpdatedFileIsValid($uploadedFile);
 
-        return $this->documentService->addDocumentVersion($uid, $uploadedFile);
+        $documentVersionMetadataArray = null;
+        $documentVersionMetadata = $request->request->get('metadata');
+        if ($documentVersionMetadata !== null) {
+            try {
+                $documentVersionMetadataArray = json_decode($documentVersionMetadata, true, flags: JSON_THROW_ON_ERROR);
+            } catch (\JsonException) {
+                throw new Error(Response::HTTP_BAD_REQUEST, 'The metadata of the document version is not valid JSON',
+                    errorCode: 'RESOURCE_MALFORMED_MDATA', errorDetail: 'metadata');
+            }
+        }
+
+        return $this->documentService->addDocumentVersion(
+            $uid, $uploadedFile, $name, $documentVersionMetadataArray, $documentType);
     }
 }

@@ -6,6 +6,7 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -18,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     types: ['https://schema.org/Document'],
     operations: [
         new Get(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/files/{uid}',
+            uriTemplate: '/co-dms-api/api/files/{uid}',
             outputFormats: [
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
@@ -29,7 +30,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: FileProvider::class
         ),
         new Post(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/files',
+            uriTemplate: '/co-dms-api/api/files',
             inputFormats: ['json' => 'application/json'],
             outputFormats: [
                 'json' => 'application/json',
@@ -61,7 +62,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             processor: FileProcessor::class
         ),
         new Put(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/files/{uid}',
+            uriTemplate: '/co-dms-api/api/files/{uid}',
             inputFormats: ['json' => 'application/json'],
             outputFormats: [
                 'json' => 'application/json',
@@ -93,6 +94,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: FileProvider::class,
             processor: FileProcessor::class
         ),
+        new Delete(
+            uriTemplate: '/co-dms-api/api/files/{uid}',
+            openapiContext: [
+                'tags' => ['Campusonline DMS'],
+            ],
+            provider: FileProvider::class,
+            processor: FileProcessor::class
+        ),
     ],
     normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsFile:output']],
     denormalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsFile:input']]
@@ -104,7 +113,7 @@ class File
     private ?string $uid = null;
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
-    #[Groups(['BlobConnectorCampusonlineDmsFile:output', 'BlobConnectorCampusonlineDmsFile:input'])]
+    #[Groups(['BlobConnectorCampusonlineDmsFile:input'])]
     private ?string $fileType = null;
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]

@@ -23,6 +23,6 @@ class DocumentProcessor extends AbstractDataProcessor
     {
         assert($data instanceof Document);
 
-        $this->documentService->removeDocument($identifier, $data);
+        $this->documentService->removeDocument($identifier);
     }
 }

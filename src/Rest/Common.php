@@ -4,24 +4,32 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 class Common
 {
-    public static function ensureUpdatedFileIsValid(mixed $uploadedFile): void
+    /**
+     * @throws Error
+     */
+    public static function ensureUpdatedFileIsValid(mixed $uploadedFile, string $fileParameterName = 'binary_content'): void
     {
         if ($uploadedFile === null) {
-            throw new BadRequestHttpException('content is required');
+            throw new Error(Response::HTTP_BAD_REQUEST, 'Parameter \''.$fileParameterName.'\' is required',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: $fileParameterName);
         }
         if ($uploadedFile instanceof UploadedFile === false) {
-            throw new \RuntimeException('uploaded file is not an instance of UploadedFile as expected');
+            throw new Error(Response::HTTP_BAD_REQUEST, 'Parameter \''.$fileParameterName.'\' must be a file stream',
+                errorCode: 'PARAMETER_TYPE_INVALID', errorDetail: $fileParameterName);
         }
         if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-            throw new BadRequestHttpException(sprintf('file upload failed: %d', $uploadedFile->getError()));
+            throw new Error(Response::HTTP_BAD_REQUEST, sprintf('file stream upload failed: %d', $uploadedFile->getError()),
+                errorCode: 'FILE_UPLOAD_FAILED', errorDetail: $fileParameterName);
         }
         if ($uploadedFile->getSize() === 0) {
-            throw new BadRequestHttpException('uploaded file must not be empty');
+            throw new Error(Response::HTTP_BAD_REQUEST, 'uploaded file stream must not be empty',
+                errorCode: 'FILE_MUST_NOT_BE_EMPTY', errorDetail: $fileParameterName);
         }
     }
 }

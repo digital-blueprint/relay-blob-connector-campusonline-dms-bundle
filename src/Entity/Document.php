@@ -21,10 +21,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
     types: ['https://schema.org/Document'],
     operations: [
         new Get(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/{uid}',
+            uriTemplate: '/co-dms-api/api/documents/{uid}',
             outputFormats: [
                 'json' => 'application/json',
-                'jsonld' => 'application/ld+json',
                 'jsonproblem' => 'application/problem+json',
             ],
             openapiContext: [
@@ -33,7 +32,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: DocumentProvider::class
         ),
         new Get(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/version/{uid}',
+            uriTemplate: '/co-dms-api/api/documents/version/{uid}/content',
             outputFormats: [
                 'octet_stream' => 'application/octet-stream',
                 'jsonproblem' => 'application/problem+json',
@@ -76,7 +75,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             read: false
         ),
         new Post(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents',
+            uriTemplate: '/co-dms-api/api/documents',
             inputFormats: ['multipart' => 'multipart/form-data'],
             outputFormats: [
                 'json' => 'application/json',
@@ -91,7 +90,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                             'schema' => [
                                 'type' => 'object',
                                 'properties' => [
-                                    'documentType' => [
+                                    'document_type' => [
                                         'type' => 'string',
                                         'example' => 'pdf',
                                     ],
@@ -99,16 +98,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                         'type' => 'string',
                                         'example' => 'filename.txt',
                                     ],
-                                    'metaData' => [
+                                    'metadata' => [
                                         'type' => 'object',
                                         'example' => '{"foo": "bar"}',
                                     ],
-                                    'content' => [
+                                    'doc_version_metadata' => [
+                                        'type' => 'object',
+                                        'example' => '{"foo": "bar"}',
+                                    ],
+                                    'binary_content' => [
                                         'type' => 'string',
                                         'format' => 'binary',
                                     ],
                                 ],
-                                'required' => ['name'],
                             ],
                         ],
                     ],
@@ -117,8 +119,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             deserialize: false
         ),
         new Post(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/{uid}/version',
-            inputFormats: ['octet_stream' => 'application/octet-stream'],
+            uriTemplate: '/co-dms-api/api/documents/{uid}/version',
+            inputFormats: ['multipart' => 'multipart/form-data'],
             outputFormats: [
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
@@ -129,10 +131,27 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'summary' => 'Creates a new version for a BlobConnectorCampusonlineDmsDocument resource',
                 'requestBody' => [
                     'content' => [
-                        'application/octet-stream' => [
+                        'multipart/form-data' => [
                             'schema' => [
-                                'type' => 'string',
-                                'format' => 'binary',
+                                'type' => 'object',
+                                'properties' => [
+                                    'document_type' => [
+                                        'type' => 'string',
+                                        'example' => 'pdf',
+                                    ],
+                                    'name' => [
+                                        'type' => 'string',
+                                        'example' => 'filename.txt',
+                                    ],
+                                    'metadata' => [
+                                        'type' => 'object',
+                                        'example' => '{"foo": "bar"}',
+                                    ],
+                                    'binary_content' => [
+                                        'type' => 'string',
+                                        'format' => 'binary',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
@@ -141,7 +160,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             deserialize: false
         ),
         new Delete(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/{uid}',
+            uriTemplate: '/co-dms-api/api/documents/{uid}',
             openapiContext: [
                 'tags' => ['Campusonline DMS'],
             ],
@@ -150,8 +169,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
     ],
     normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:output']],
-    denormalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:input']],
-    extraProperties: ['rfc_7807_compliant_errors' => true]
+    denormalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:input']]
 )]
 class Document
 {
@@ -160,20 +178,12 @@ class Document
     private ?string $uid = null;
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
-    #[Groups(['BlobConnectorCampusonlineDmsDocument:output', 'BlobConnectorCampusonlineDmsDocument:input'])]
-    private ?string $documentType = null;
-
-    #[ApiProperty(iris: ['https://schema.org/name'])]
-    #[Groups(['BlobConnectorCampusonlineDmsDocument:output', 'BlobConnectorCampusonlineDmsDocument:input'])]
-    private ?string $name = null;
-
-    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
-    #[Groups(['BlobConnectorCampusonlineDmsDocument:output', 'BlobConnectorCampusonlineDmsDocument:input'])]
+    #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
     private ?array $metaData = null;
 
     #[ApiProperty(iris: ['https://schema.org/version'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
-    private ?DocumentVersionInfo $latestContent = null;
+    private ?DocumentVersionInfo $latestVersion = null;
 
     public function getUid(): ?string
     {
@@ -183,26 +193,6 @@ class Document
     public function setUid(?string $uid): void
     {
         $this->uid = $uid;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(?string $name): void
-    {
-        $this->name = $name;
-    }
-
-    public function getDocumentType(): ?string
-    {
-        return $this->documentType;
-    }
-
-    public function setDocumentType(?string $documentType): void
-    {
-        $this->documentType = $documentType;
     }
 
     public function getMetaData(): ?array
@@ -215,13 +205,13 @@ class Document
         $this->metaData = $metaData;
     }
 
-    public function getLatestContent(): ?DocumentVersionInfo
+    public function getLatestVersion(): ?DocumentVersionInfo
     {
-        return $this->latestContent;
+        return $this->latestVersion;
     }
 
-    public function setLatestContent(?DocumentVersionInfo $latestContent): void
+    public function setLatestVersion(?DocumentVersionInfo $latestVersion): void
     {
-        $this->latestContent = $latestContent;
+        $this->latestVersion = $latestVersion;
     }
 }

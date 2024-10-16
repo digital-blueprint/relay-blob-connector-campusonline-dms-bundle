@@ -6,7 +6,9 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DeleteDocumentVersionController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentVersionInfoProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -15,11 +17,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
     types: ['https://schema.org/version'],
     operations: [
         new Get(
-            uriTemplate: '/co-dp-dms-adapter-d3/api/documents/version/{uid}/info',
+            uriTemplate: '/co-dms-api/api/documents/version/{uid}/metadata',
             outputFormats: [
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
+            openapiContext: [
+                'tags' => ['Campusonline DMS'],
+            ],
+            provider: DocumentVersionInfoProvider::class
+        ),
+        new Delete(
+            uriTemplate: '/co-dms-api/api/documents/version/{uid}',
+            controller: DeleteDocumentVersionController::class,
             openapiContext: [
                 'tags' => ['Campusonline DMS'],
             ],
@@ -34,9 +44,13 @@ class DocumentVersionInfo
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $uid = null;
 
+    #[ApiProperty(iris: ['https://schema.org/name'])]
+    #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
+    private ?string $name = null;
+
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
-    private ?string $version = null;
+    private ?string $versionNumber = null;
 
     #[ApiProperty(iris: ['https://schema.org/name'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
@@ -45,6 +59,10 @@ class DocumentVersionInfo
     #[ApiProperty(iris: ['https://schema.org/name'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?int $size = null;
+
+    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
+    #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
+    private ?array $metaData = null;
 
     public function getUid(): ?string
     {
@@ -56,14 +74,24 @@ class DocumentVersionInfo
         $this->uid = $uid;
     }
 
-    public function getVersion(): ?string
+    public function getName(): ?string
     {
-        return $this->version;
+        return $this->name;
     }
 
-    public function setVersion(?string $version): void
+    public function setName(?string $name): void
     {
-        $this->version = $version;
+        $this->name = $name;
+    }
+
+    public function getVersionNumber(): ?string
+    {
+        return $this->versionNumber;
+    }
+
+    public function setVersionNumber(?string $versionNumber): void
+    {
+        $this->versionNumber = $versionNumber;
     }
 
     public function getMediaType(): ?string
@@ -84,5 +112,15 @@ class DocumentVersionInfo
     public function setSize(?int $size): void
     {
         $this->size = $size;
+    }
+
+    public function getMetaData(): ?array
+    {
+        return $this->metaData;
+    }
+
+    public function setMetaData(?array $metaData): void
+    {
+        $this->metaData = $metaData;
     }
 }

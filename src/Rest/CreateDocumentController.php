@@ -6,12 +6,13 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest;
 
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Authorization\AuthorizationService;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\Helpers\Tools;
 use Dbp\Relay\CoreBundle\Rest\CustomControllerTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 class CreateDocumentController extends AbstractController
 {
@@ -33,27 +34,41 @@ class CreateDocumentController extends AbstractController
 
         $name = $request->request->get('name');
         if (Tools::isNullOrEmpty($name)) {
-            throw new BadRequestHttpException('parameter \'name\' must not be empty');
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'name\' must not be empty',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'name');
         }
-        $documentType = $request->request->get('documentType'); // TODO: is documentType required?
-        $uploadedFile = $request->files->get('content');
+
+        $uploadedFile = $request->files->get('binary_content');
         Common::ensureUpdatedFileIsValid($uploadedFile);
 
-        $metaDataArray = null;
-        $metaData = $request->request->get('metaData');
-        if ($metaData !== null) {
+        $metadata = $request->request->get('metadata');
+        if ($metadata === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'metadata\' must not be empty',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'metadata');
+        }
+
+        try {
+            $metadataArray = json_decode($metadata, true, flags: JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'The metadata of the document is not valid JSON',
+                errorCode: 'RESOURCE_MALFORMED_MDATA', errorDetail: 'metadata');
+        }
+        $documentType = $request->request->get('documentType');
+
+        $document = new Document();
+        $document->setMetaData($metadataArray);
+
+        $documentVersionMetadataArray = null;
+        $documentVersionMetadata = $request->request->get('doc_version_metadata');
+        if ($documentVersionMetadata !== null) {
             try {
-                $metaDataArray = json_decode($metaData, true, 512, JSON_THROW_ON_ERROR);
+                $documentVersionMetadataArray = json_decode($documentVersionMetadata, true, flags: JSON_THROW_ON_ERROR);
             } catch (\JsonException) {
-                throw new BadRequestHttpException('parameter \'metaData\' is invalid json');
+                throw new Error(Response::HTTP_BAD_REQUEST, 'The metadata of the document version is not valid JSON',
+                    errorCode: 'RESOURCE_MALFORMED_MDATA', errorDetail: 'doc_version_metadata');
             }
         }
 
-        $document = new Document();
-        $document->setName($name);
-        $document->setDocumentType($documentType);
-        $document->setMetaData($metaDataArray);
-
-        return $this->documentService->addDocument($document, $uploadedFile);
+        return $this->documentService->addDocument($document, $uploadedFile, $name, $documentVersionMetadataArray, $documentType);
     }
 }
