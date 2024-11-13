@@ -38,8 +38,7 @@ class CreateDocumentController extends AbstractController
                 errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'name');
         }
 
-        $uploadedFile = $request->files->get('binary_content');
-        Common::ensureUpdatedFileIsValid($uploadedFile);
+        $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
         $metadata = $request->request->get('metadata');
         if ($metadata === null) {

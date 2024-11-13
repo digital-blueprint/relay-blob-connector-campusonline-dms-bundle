@@ -34,8 +34,7 @@ class CreateDocumentVersionController extends AbstractController
         $name = $request->request->get('name');
         $documentType = $request->request->get('document_type');
 
-        $uploadedFile = $request->files->get('binary_content');
-        Common::ensureUpdatedFileIsValid($uploadedFile);
+        $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
         $documentVersionMetadataArray = null;
         $documentVersionMetadata = $request->request->get('metadata');

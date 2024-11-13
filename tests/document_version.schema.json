@@ -1,0 +1,26 @@
+{
+  "name": "Campusonline DMS API document version information",
+  "properties": {
+    "version": {
+      "description": "The version of the document",
+      "type": "string",
+      "required": true
+    },
+    "doc_version_metadata": {
+      "description": "Additional metadata of the document version",
+      "type": "object",
+      "required": false
+    },
+    "doc_metadata": {
+      "description": "Additional metadata of the document",
+      "type": "object",
+      "required": false
+    },
+    "doc_type": {
+      "description": "The CO document type",
+      "type": "string",
+      "required": false
+    }
+  },
+  "additionalProperties": false
+}

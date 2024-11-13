@@ -10,16 +10,16 @@ use Dbp\Relay\BlobBundle\Entity\FileData;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\DocumentVersionInfo;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
-use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\File as FileEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentService
 {
-    private const DOCUMENT_VERSION_METADATA_TYPE = 'document_version'; // config value?
-    private const BUCKET_ID = 'campusonline-dms-bucket';
+    public const BUCKET_ID = 'campusonline-dms-bucket';
 
+    private const DOCUMENT_VERSION_METADATA_TYPE = 'document_version'; // config value?
     private const DOCUMENT_VERSION_METADATA_METADATA_KEY = 'doc_version_metadata';
     private const DOCUMENT_METADATA_METADATA_KEY = 'doc_metadata';
     private const VERSION_NUMBER_METADATA_KEY = 'version';
@@ -64,7 +64,7 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function addDocument(Document $document, UploadedFile $uploadedFile, string $name,
+    public function addDocument(Document $document, File $uploadedFile, string $name,
         ?array $documentVersionMetadata = null, ?string $documentType = null): Document
     {
         $document->setUid((string) Uuid::v7());
@@ -91,7 +91,7 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function addDocumentVersion(string $documentUid, UploadedFile $uploadedFile,
+    public function addDocumentVersion(string $documentUid, File $uploadedFile,
         string $name, ?array $documentVersionMetadata = null, ?string $documentType = null): ?Document
     {
         $document = $this->getDocument($documentUid);
@@ -140,36 +140,36 @@ class DocumentService
         }
     }
 
-    public function getFile(string $uid): ?File
+    public function getFile(string $uid): ?FileEntity
     {
-        $file = new File();
+        $file = new FileEntity();
         $file->setUid($uid);
 
         return $file;
     }
 
-    public function addFile(File $file): File
+    public function addFile(FileEntity $file): FileEntity
     {
         $file->setUid((string) Uuid::v7());
 
         return $file;
     }
 
-    public function replaceFile(string $uid, File $file): File
+    public function replaceFile(string $uid, FileEntity $file): FileEntity
     {
         $file->setUid($uid);
 
         return $file;
     }
 
-    public function removeFile(string $uid, File $file): void
+    public function removeFile(string $uid, FileEntity $file): void
     {
     }
 
     /**
      * @throws \Exception
      */
-    private function createDocumentVersion(Document $document, UploadedFile $uploadedFile, string $name,
+    private function createDocumentVersion(Document $document, File $uploadedFile, string $name,
         ?array $documentVersionMetadata = null, ?string $documentType = null, ?string $lastVersion = null): DocumentVersionInfo
     {
         $versionNumber = $lastVersion ? strval(intval($lastVersion) + 1) : '1';
@@ -198,9 +198,10 @@ class DocumentService
         $fileData->setPrefix($document->getUid());
         $fileData->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
         $fileData->setMetadata($metadataEncoded);
+        $fileData->setBucketId(self::BUCKET_ID);
 
         try {
-            $fileData = $this->fileApi->addFile($fileData, self::BUCKET_ID);
+            $fileData = $this->fileApi->addFile($fileData);
         } catch (FileApiException $fileApiException) {
             throw self::createException($fileApiException);
         }

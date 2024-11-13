@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1d5b37bb6c704574590787ba89a31b7",
+    "content-hash": "316bfe0cb79d8b0f7e4f4c359a076b91",
     "packages": [
         {
             "name": "api-platform/core",
@@ -289,16 +289,16 @@
         },
         {
             "name": "dbp/relay-blob-bundle",
-            "version": "v0.1.65",
+            "version": "v0.1.66",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-blob-bundle.git",
-                "reference": "83c25e692f2386182ffc665a7a56f185f766cd5f"
+                "reference": "969e4d635f1c62bf7e54eed14dfcbb97cd1f1462"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/83c25e692f2386182ffc665a7a56f185f766cd5f",
-                "reference": "83c25e692f2386182ffc665a7a56f185f766cd5f",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/969e4d635f1c62bf7e54eed14dfcbb97cd1f1462",
+                "reference": "969e4d635f1c62bf7e54eed14dfcbb97cd1f1462",
                 "shasum": ""
             },
             "require": {
@@ -315,6 +315,7 @@
                 "kekos/multipart-form-data-parser": "^1.1",
                 "nyholm/psr7": "^1.8",
                 "php": ">=8.1",
+                "psr/log": "^1.0 || ^2 || ^3",
                 "ramsey/uuid": "^4.7",
                 "ramsey/uuid-doctrine": "^2.0",
                 "symfony/config": "^6.4",
@@ -360,9 +361,9 @@
             "description": "A bundle for file-serving, persisting and managing",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-blob-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.1.165"
+                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.1.66"
             },
-            "time": "2024-11-07T14:49:22+00:00"
+            "time": "2024-11-13T11:18:36+00:00"
         },
         {
             "name": "dbp/relay-blob-library",
@@ -420,16 +421,16 @@
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.190",
+            "version": "v0.1.191",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-core-bundle.git",
-                "reference": "715a41d8807f8b3fbb422ba53051b4adfec4f8f2"
+                "reference": "bbc78e054ef3a350a3bbfb0a944dc0955ad43304"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/715a41d8807f8b3fbb422ba53051b4adfec4f8f2",
-                "reference": "715a41d8807f8b3fbb422ba53051b4adfec4f8f2",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/bbc78e054ef3a350a3bbfb0a944dc0955ad43304",
+                "reference": "bbc78e054ef3a350a3bbfb0a944dc0955ad43304",
                 "shasum": ""
             },
             "require": {
@@ -515,9 +516,9 @@
             "description": "The core bundle of the Relay API gateway",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-core-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.190"
+                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.191"
             },
-            "time": "2024-11-06T08:14:32+00:00"
+            "time": "2024-11-12T14:03:25+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -2593,16 +2594,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "3.7.0",
+            "version": "3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "f4393b648b78a5408747de94fca38beb5f7e9ef8"
+                "reference": "32e515fdc02cdafbe4593e30a9350d486b125b67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f4393b648b78a5408747de94fca38beb5f7e9ef8",
-                "reference": "f4393b648b78a5408747de94fca38beb5f7e9ef8",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/32e515fdc02cdafbe4593e30a9350d486b125b67",
+                "reference": "32e515fdc02cdafbe4593e30a9350d486b125b67",
                 "shasum": ""
             },
             "require": {
@@ -2622,12 +2623,14 @@
                 "guzzlehttp/psr7": "^2.2",
                 "mongodb/mongodb": "^1.8",
                 "php-amqplib/php-amqplib": "~2.4 || ^3",
-                "phpstan/phpstan": "^1.9",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.4",
-                "phpunit/phpunit": "^10.5.17",
+                "php-console/php-console": "^3.1.8",
+                "phpstan/phpstan": "^2",
+                "phpstan/phpstan-deprecation-rules": "^2",
+                "phpstan/phpstan-strict-rules": "^2",
+                "phpunit/phpunit": "^10.5.17 || ^11.0.7",
                 "predis/predis": "^1.1 || ^2",
-                "ruflin/elastica": "^7",
+                "rollbar/rollbar": "^4.0",
+                "ruflin/elastica": "^7 || ^8",
                 "symfony/mailer": "^5.4 || ^6",
                 "symfony/mime": "^5.4 || ^6"
             },
@@ -2678,7 +2681,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/3.7.0"
+                "source": "https://github.com/Seldaek/monolog/tree/3.8.0"
             },
             "funding": [
                 {
@@ -2690,7 +2693,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-28T09:40:51+00:00"
+            "time": "2024-11-12T13:57:08+00:00"
         },
         {
             "name": "nelmio/cors-bundle",
@@ -12887,14 +12890,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1",
         "ext-json": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.1"
     },
