@@ -52,7 +52,7 @@ class CreateDocumentController extends AbstractController
             throw new Error(Response::HTTP_BAD_REQUEST, 'The metadata of the document is not valid JSON',
                 errorCode: 'RESOURCE_MALFORMED_MDATA', errorDetail: 'metadata');
         }
-        $documentType = $request->request->get('documentType');
+        $documentType = $request->request->get('document_type');
 
         $document = new Document();
         $document->setMetaData($metadataArray);
