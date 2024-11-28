@@ -6,7 +6,9 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use Dbp\Relay\BlobBundle\DbpRelayBlobBundle;
+use Dbp\Relay\BlobBundle\TestUtils\BlobTestUtils;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\DbpRelayBlobConnectorCampusonlineDmsBundle;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\DbpRelayCoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
@@ -54,45 +56,19 @@ class Kernel extends BaseKernel
             'annotations' => false,
         ]);
 
-        $container->extension('dbp_relay_blob_connector_campusonline_dms', []);
-
-        $container->extension('dbp_relay_blob', [
-            'database_url' => 'sqlite:///:memory:',
-            'reporting_interval' => '0 9 * * MON',
-            'cleanup_interval' => '0 * * * *',
-            'file_integrity_checks' => false,
-            'additional_auth' => false,
-            'integrity_check_interval' => '0 0 1 * *',
-            'bucket_size_check_interval' => '0 2 * * 1',
-            'quota_warning_interval' => '0 6 * * *',
-            'buckets' => [
-                'test-bucket' => [
-                    'service' => 'Dbp\Relay\BlobBundle\Tests\DummyFileSystemService',
-                    'internal_bucket_id' => '018e0ed8-e6d7-794f-8f60-42efe27ef49e',
-                    'bucket_id' => 'test-bucket',
-                    'key' => '08d848fd868d83646778b87dd0695b10f59c78e23b286e9884504d1bb43cce93',
-                    'quota' => 500, // in MB
-                    'output_validation' => true,
-                    'notify_when_quota_over' => 70, // in percent of quota
-                    'report_when_expiry_in' => 'P62D', // in Days, 62 = two 31 day months
-                    'bucket_owner' => 'manuel.kocher@tugraz.at',
-                    'link_expire_time' => 'PT1M',
-                    'reporting' => [
-                        'dsn' => 'smtp:localhost',
-                        'from' => 'noreply@tugraz.at',
-                        'to' => 'tamara.steinwender@tugraz.at',
-                        'subject' => 'Blob file deletion reporting',
-                        'html_template' => 'emails/reporting.html.twig',
-                    ],
-                    'integrity' => [
-                        'dsn' => 'smtp:localhost',
-                        'from' => 'noreply@tugraz.at',
-                        'to' => 'manuel.kocher@tugraz.at',
-                        'subject' => 'Blob file integrity check report',
-                        'html_template' => 'emails/integrity.html.twig',
-                    ],
+        $container->extension('dbp_relay_blob_connector_campusonline_dms', [
+            'authorization' => [
+                'roles' => [
+                    'ROLE_USER' => 'user.get("MAY_USE_CO_DMS_API")',
                 ],
             ],
         ]);
+
+        $blobTestConfig = BlobTestUtils::getTestConfig();
+        $blobTestConfig['buckets'][0]['bucket_id'] = DocumentService::BUCKET_ID;
+        $blobTestConfig['buckets'][0]['additional_types'] = [
+            ['document_version' => __DIR__.'/document_version.schema.json'],
+        ];
+        $container->extension('dbp_relay_blob', $blobTestConfig);
     }
 }

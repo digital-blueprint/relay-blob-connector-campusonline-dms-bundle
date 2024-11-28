@@ -11,6 +11,9 @@ use ApiPlatform\Metadata\Get;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DeleteDocumentVersionController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentVersionInfoProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 #[ApiResource(
     shortName: 'BlobConnectorCampusonlineDmsDocumentVersionInfo',
@@ -36,7 +39,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
             provider: DocumentVersionInfoProvider::class
         ),
     ],
-    normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocumentVersionInfo:output']],
+    normalizationContext: [
+        'groups' => ['BlobConnectorCampusonlineDmsDocumentVersionInfo:output'],
+        AbstractObjectNormalizer::PRESERVE_EMPTY_OBJECTS => true,
+    ],
 )]
 class DocumentVersionInfo
 {
@@ -62,6 +68,7 @@ class DocumentVersionInfo
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
+    #[Context([Serializer::EMPTY_ARRAY_AS_OBJECT => true])]
     private ?array $metaData = null;
 
     public function getUid(): ?string

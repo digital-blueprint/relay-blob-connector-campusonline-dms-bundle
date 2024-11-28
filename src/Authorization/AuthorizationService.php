@@ -23,6 +23,6 @@ class AuthorizationService extends AbstractAuthorizationService
 
     public function hasRoleUser(): bool
     {
-        return $this->isGranted(Configuration::ROLE_USER);
+        return $this->isGrantedRole(Configuration::ROLE_USER);
     }
 }

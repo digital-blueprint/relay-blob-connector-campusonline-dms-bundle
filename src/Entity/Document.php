@@ -15,6 +15,9 @@ use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentProcessor;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentProvider;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\GetDocumentVersionContentController;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 #[ApiResource(
     shortName: 'BlobConnectorCampusonlineDmsDocument',
@@ -168,7 +171,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
             processor: DocumentProcessor::class
         ),
     ],
-    normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:output']],
+    normalizationContext: [
+        'groups' => ['BlobConnectorCampusonlineDmsDocument:output'],
+        AbstractObjectNormalizer::PRESERVE_EMPTY_OBJECTS => true,
+    ],
     denormalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsDocument:input']]
 )]
 class Document
@@ -179,6 +185,7 @@ class Document
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
+    #[Context([Serializer::EMPTY_ARRAY_AS_OBJECT => true])]
     private ?array $metaData = null;
 
     #[ApiProperty(iris: ['https://schema.org/version'])]

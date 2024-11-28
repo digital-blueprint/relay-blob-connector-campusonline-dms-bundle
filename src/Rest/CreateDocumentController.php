@@ -41,7 +41,7 @@ class CreateDocumentController extends AbstractController
         $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
         $metadata = $request->request->get('metadata');
-        if ($metadata === null) {
+        if (!$metadata) {
             throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'metadata\' must not be empty',
                 errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'metadata');
         }
@@ -59,7 +59,7 @@ class CreateDocumentController extends AbstractController
 
         $documentVersionMetadataArray = null;
         $documentVersionMetadata = $request->request->get('doc_version_metadata');
-        if ($documentVersionMetadata !== null) {
+        if ($documentVersionMetadata) {
             try {
                 $documentVersionMetadataArray = json_decode($documentVersionMetadata, true, flags: JSON_THROW_ON_ERROR);
             } catch (\JsonException) {

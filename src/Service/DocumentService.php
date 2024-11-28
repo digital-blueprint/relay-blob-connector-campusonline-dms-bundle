@@ -187,7 +187,7 @@ class DocumentService
         }
 
         try {
-            $metadataEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
+            $metadataEncoded = json_encode($metadata, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT);
         } catch (\Exception $jsonException) {
             throw new \RuntimeException(sprintf('encoding file metadata failed: %s', $jsonException->getMessage()));
         }
@@ -220,7 +220,7 @@ class DocumentService
         $documentVersionInfo->setVersionNumber($metadata[self::VERSION_NUMBER_METADATA_KEY]);
         $documentVersionInfo->setMediaType($fileData->getMimeType());
         $documentVersionInfo->setSize($fileData->getFileSize());
-        $documentVersionInfo->setMetaData($metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] ?? null);
+        $documentVersionInfo->setMetaData($metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] ?? []);
 
         return $documentVersionInfo;
     }

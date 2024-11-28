@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('dbp_relay_blob_connector_campusonline_dms');
         $treeBuilder->getRootNode()
             ->append(AuthorizationConfigDefinition::create()
-                ->addPolicy(self::ROLE_USER, 'false', 'Returns true if the current user is authorized to use the API')
+                ->addRole(self::ROLE_USER, 'false', 'Returns true if the current user is authorized to use the API')
                 ->getNodeDefinition());
 
         return $treeBuilder;
