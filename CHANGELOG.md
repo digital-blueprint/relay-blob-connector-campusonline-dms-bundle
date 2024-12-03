@@ -2,9 +2,11 @@
 
 ## Unreleased
 
-* Add workaround for clients uploading files with missing 'filename' directive in 'Content-Disposition'
-header of multipart/form-data POST
+## v0.1.6
+
+* Update core and authz policies
 * Add unit tests
+* Ensure (empty) metadata is encoded as object (and displayed as object in OpenAPI)
 
 ## v0.1.5
 

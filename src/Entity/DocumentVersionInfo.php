@@ -50,23 +50,29 @@ class DocumentVersionInfo
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $uid = null;
 
-    #[ApiProperty(iris: ['https://schema.org/name'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $name = null;
 
-    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $versionNumber = null;
 
-    #[ApiProperty(iris: ['https://schema.org/name'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $mediaType = null;
 
-    #[ApiProperty(iris: ['https://schema.org/name'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?int $size = null;
 
-    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
+    #[ApiProperty(
+        openapiContext: [
+            'type' => 'object',
+            'example' => [
+                'document_version_type' => 'draft',
+            ],
+        ],
+        jsonSchemaContext: [
+            'type' => 'object',
+        ]
+    )]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     #[Context([Serializer::EMPTY_ARRAY_AS_OBJECT => true])]
     private ?array $metaData = null;

@@ -183,12 +183,21 @@ class Document
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $uid = null;
 
-    #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
+    #[ApiProperty(
+        openapiContext: [
+            'type' => 'object',
+            'example' => [
+                'document_type' => 'transcript_of_records',
+            ],
+        ],
+        jsonSchemaContext: [
+            'type' => 'object',
+        ]
+    )]
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
     #[Context([Serializer::EMPTY_ARRAY_AS_OBJECT => true])]
     private ?array $metaData = null;
 
-    #[ApiProperty(iris: ['https://schema.org/version'])]
     #[Groups(['BlobConnectorCampusonlineDmsDocument:output'])]
     private ?DocumentVersionInfo $latestVersion = null;
 
