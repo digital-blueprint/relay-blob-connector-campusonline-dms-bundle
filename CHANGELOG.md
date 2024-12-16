@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.1.8
+
+* Update to phpstan v2
+* Adjust for blob test API changes
+
 ## v0.1.7
 
 * Update core and authz policies
