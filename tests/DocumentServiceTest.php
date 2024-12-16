@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use Dbp\Relay\BlobBundle\Api\FileApi;
 use Dbp\Relay\BlobBundle\TestUtils\BlobTestUtils;
-use Dbp\Relay\BlobBundle\TestUtils\TestDatasystemProviderService;
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
@@ -18,6 +18,7 @@ class DocumentServiceTest extends ApiTestCase
     private const TEST_FILE_2_NAME = 'test_patch.txt';
     protected ?DocumentService $documentService = null;
     protected ?TestEntityManager $blobTestEntityManager = null;
+    private FileApi $fileApi;
 
     protected function setUp(): void
     {
@@ -33,10 +34,11 @@ class DocumentServiceTest extends ApiTestCase
         ];
 
         $this->blobTestEntityManager = new TestEntityManager(self::bootKernel()->getContainer());
-        $this->documentService = new DocumentService(BlobTestUtils::createTestFileApi(
+        $this->fileApi = BlobTestUtils::createTestFileApi(
             $this->blobTestEntityManager->getEntityManager(),
             $testConfig
-        ));
+        );
+        $this->documentService = new DocumentService($this->fileApi);
     }
 
     /**
@@ -66,10 +68,9 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertEquals($file->getSize(), $document->getLatestVersion()->getSize());
         $this->assertEquals($file->getMimeType(), $document->getLatestVersion()->getMediaType());
 
-        $this->assertTrue(TestDatasystemProviderService::hasFile(
-            self::getInternalBucketId(), $document->getLatestVersion()->getUid()));
-        $this->assertTrue(TestDatasystemProviderService::isContentEqual(
-            self::getInternalBucketId(), $document->getLatestVersion()->getUid(), $file));
+        $res = $this->fileApi->getFile($document->getLatestVersion()->getUid());
+        $this->assertNotNull($res->getFile());
+        $this->assertSame($file->getContent(), $res->getFile()->getContent());
     }
 
     protected static function getInternalBucketId(): ?string
