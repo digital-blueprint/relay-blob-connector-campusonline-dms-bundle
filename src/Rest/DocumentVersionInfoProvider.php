@@ -20,6 +20,7 @@ class DocumentVersionInfoProvider extends AbstractDataProvider
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
     {
+        parent::__construct();
     }
 
     /**

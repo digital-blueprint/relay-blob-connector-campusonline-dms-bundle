@@ -20,6 +20,7 @@ class DocumentProvider extends AbstractDataProvider
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
     {
+        parent::__construct();
     }
 
     /**

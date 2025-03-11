@@ -20,6 +20,7 @@ class FileProvider extends AbstractDataProvider
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
     {
+        parent::__construct();
     }
 
     protected function getItemById(string $id, array $filters = [], array $options = []): ?File
