@@ -6,9 +6,7 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use Dbp\Relay\BlobBundle\DbpRelayBlobBundle;
-use Dbp\Relay\BlobBundle\TestUtils\BlobTestUtils;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\DbpRelayBlobConnectorCampusonlineDmsBundle;
-use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\DbpRelayCoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
@@ -64,11 +62,6 @@ class Kernel extends BaseKernel
             ],
         ]);
 
-        $blobTestConfig = BlobTestUtils::getTestConfig();
-        $blobTestConfig['buckets'][0]['bucket_id'] = DocumentService::BUCKET_ID;
-        $blobTestConfig['buckets'][0]['additional_types'] = [
-            ['document_version' => __DIR__.'/document_version.schema.json'],
-        ];
-        $container->extension('dbp_relay_blob', $blobTestConfig);
+        $container->extension('dbp_relay_blob', DocumentServiceTest::getBLobTestConfig());
     }
 }

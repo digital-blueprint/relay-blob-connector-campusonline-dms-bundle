@@ -20,12 +20,7 @@ class DocumentServiceTest extends ApiTestCase
     protected ?TestEntityManager $blobTestEntityManager = null;
     private FileApi $fileApi;
 
-    protected function setUp(): void
-    {
-        $this->setUpFileApi();
-    }
-
-    protected function setUpFileApi(): void
+    public static function getBLobTestConfig(): array
     {
         $testConfig = BlobTestUtils::getTestConfig();
         $testConfig['buckets'][0]['bucket_id'] = DocumentService::BUCKET_ID;
@@ -33,10 +28,20 @@ class DocumentServiceTest extends ApiTestCase
             ['document_version' => __DIR__.'/document_version.schema.json'],
         ];
 
+        return $testConfig;
+    }
+
+    protected function setUp(): void
+    {
+        $this->setUpFileApi();
+    }
+
+    protected function setUpFileApi(): void
+    {
         $this->blobTestEntityManager = new TestEntityManager(self::bootKernel()->getContainer());
         $this->fileApi = BlobTestUtils::createTestFileApi(
             $this->blobTestEntityManager->getEntityManager(),
-            $testConfig
+            self::getBLobTestConfig()
         );
         $this->documentService = new DocumentService($this->fileApi);
     }
