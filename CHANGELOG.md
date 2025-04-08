@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.1.9
+
+* Update core and add missing parent constructor calls
+
 ## v0.1.8
 
 * Update to phpstan v2
