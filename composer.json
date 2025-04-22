@@ -6,9 +6,9 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
-        "api-platform/core": "^3.2",
+        "api-platform/core": "^3.4 || ^4.1",
         "dbp/relay-blob-bundle": "^0.1.68",
-        "dbp/relay-core-bundle": "^0.1.194",
+        "dbp/relay-core-bundle": "^0.1.210",
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "symfony/config": "^6.4",

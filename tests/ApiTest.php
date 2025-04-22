@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
+use Dbp\Relay\CoreBundle\TestUtils\AbstractApiTest;
 use Dbp\Relay\CoreBundle\TestUtils\TestClient;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiTest extends ApiTestCase
+class ApiTest extends AbstractApiTest
 {
     private const TEST_FILE_NAME = 'test.txt';
     private const TEST_FILE_PATH = __DIR__.'/'.self::TEST_FILE_NAME;
     private const TEST_DOCUMENT_TYPE = 'doc_type';
-
-    private ?TestClient $testClient = null;
 
     protected function setUp(): void
     {

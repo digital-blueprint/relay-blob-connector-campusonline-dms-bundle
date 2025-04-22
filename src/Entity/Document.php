@@ -9,6 +9,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\RequestBody;
+use ApiPlatform\OpenApi\Model\Response;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\CreateDocumentController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\CreateDocumentVersionController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentProcessor;
@@ -29,9 +32,9 @@ use Symfony\Component\Serializer\Serializer;
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: DocumentProvider::class
         ),
         new Get(
@@ -41,40 +44,40 @@ use Symfony\Component\Serializer\Serializer;
                 'jsonproblem' => 'application/problem+json',
             ],
             controller: GetDocumentVersionContentController::class,
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-                'summary' => 'Retrieves the file content for a BlobConnectorCampusonlineDmsDocumentVersionInfo resource',
-                'responses' => [
-                    '200' => [
-                        'content' => [
+            openapi: new Operation(
+                tags: ['Campusonline DMS'],
+                responses: [
+                    200 => new Response(
+                        content: new \ArrayObject([
                             'application/octet-stream' => [
                                 'schema' => [
                                     'type' => 'string',
                                     'format' => 'binary',
                                 ],
                             ],
-                        ],
-                    ],
-                    '415' => [
-                        'content' => [
+                        ])
+                    ),
+                    415 => new Response(
+                        content: new \ArrayObject([
                             'application/problem+json' => [
                                 'schema' => [
                                     'type' => 'object',
                                 ],
                             ],
-                        ],
-                    ],
-                    'default' => [
-                        'content' => [
+                        ])
+                    ),
+                    'default' => new Response(
+                        content: new \ArrayObject([
                             'application/problem+json' => [
                                 'schema' => [
                                     'type' => 'object',
                                 ],
                             ],
-                        ],
-                    ],
+                        ])
+                    ),
                 ],
-            ],
+                summary: 'Retrieves the file content for a BlobConnectorCampusonlineDmsDocumentVersionInfo resource'
+            ),
             read: false
         ),
         new Post(
@@ -85,10 +88,10 @@ use Symfony\Component\Serializer\Serializer;
                 'jsonproblem' => 'application/problem+json',
             ],
             controller: CreateDocumentController::class,
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-                'requestBody' => [
-                    'content' => [
+            openapi: new Operation(
+                tags: ['Campusonline DMS'],
+                requestBody: new RequestBody(
+                    content: new \ArrayObject([
                         'multipart/form-data' => [
                             'schema' => [
                                 'type' => 'object',
@@ -116,9 +119,9 @@ use Symfony\Component\Serializer\Serializer;
                                 ],
                             ],
                         ],
-                    ],
-                ],
-            ],
+                    ])
+                )
+            ),
             deserialize: false
         ),
         new Post(
@@ -129,11 +132,11 @@ use Symfony\Component\Serializer\Serializer;
                 'jsonproblem' => 'application/problem+json',
             ],
             controller: CreateDocumentVersionController::class,
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-                'summary' => 'Creates a new version for a BlobConnectorCampusonlineDmsDocument resource',
-                'requestBody' => [
-                    'content' => [
+            openapi: new Operation(
+                tags: ['Campusonline DMS'],
+                summary: 'Creates a new version for a BlobConnectorCampusonlineDmsDocument resource',
+                requestBody: new RequestBody(
+                    content: new \ArrayObject([
                         'multipart/form-data' => [
                             'schema' => [
                                 'type' => 'object',
@@ -157,16 +160,16 @@ use Symfony\Component\Serializer\Serializer;
                                 ],
                             ],
                         ],
-                    ],
-                ],
-            ],
+                    ])
+                )
+            ),
             deserialize: false
         ),
         new Delete(
             uriTemplate: '/co-dms-api/api/documents/{uid}',
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: DocumentProvider::class,
             processor: DocumentProcessor::class
         ),

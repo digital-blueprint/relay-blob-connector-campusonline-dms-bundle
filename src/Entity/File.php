@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\RequestBody;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\FileProcessor;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\FileProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -24,9 +26,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: FileProvider::class
         ),
         new Post(
@@ -36,10 +38,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-                'requestBody' => [
-                    'content' => [
+            openapi: new Operation(
+                tags: ['Campusonline DMS'],
+                requestBody: new RequestBody(
+                    content: new \ArrayObject([
                         'application/json' => [
                             'schema' => [
                                 'type' => 'object',
@@ -56,9 +58,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'required' => ['fileType'],
                             ],
                         ],
-                    ],
-                ],
-            ],
+                    ])
+                )
+            ),
             processor: FileProcessor::class
         ),
         new Put(
@@ -68,10 +70,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-                'requestBody' => [
-                    'content' => [
+            openapi: new Operation(
+                tags: ['Campusonline DMS'],
+                requestBody: new RequestBody(
+                    content: new \ArrayObject([
                         'application/json' => [
                             'schema' => [
                                 'type' => 'object',
@@ -88,17 +90,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'required' => ['fileType'],
                             ],
                         ],
-                    ],
-                ],
-            ],
+                    ])
+                )
+            ),
             provider: FileProvider::class,
             processor: FileProcessor::class
         ),
         new Delete(
             uriTemplate: '/co-dms-api/api/files/{uid}',
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: FileProvider::class,
             processor: FileProcessor::class
         ),

@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\OpenApi\Model\Operation;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DeleteDocumentVersionController;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\DocumentVersionInfoProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -25,17 +26,17 @@ use Symfony\Component\Serializer\Serializer;
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
             ],
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: DocumentVersionInfoProvider::class
         ),
         new Delete(
             uriTemplate: '/co-dms-api/api/documents/version/{uid}',
             controller: DeleteDocumentVersionController::class,
-            openapiContext: [
-                'tags' => ['Campusonline DMS'],
-            ],
+            openapi: new Operation(
+                tags: ['Campusonline DMS']
+            ),
             provider: DocumentVersionInfoProvider::class
         ),
     ],
