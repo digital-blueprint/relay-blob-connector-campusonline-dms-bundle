@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.1.10
+
+* Drop support for PHP 8.1
+* Add support for api-platform 4.1 (and drop for <3.4)
+
 ## v0.1.9
 
 * Update core and add missing parent constructor calls
