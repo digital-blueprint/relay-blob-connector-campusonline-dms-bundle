@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.1.11
+
+* Fix broken error responses with api-platform 4.1
+
 ## v0.1.10
 
 * Drop support for PHP 8.1
