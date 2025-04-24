@@ -25,6 +25,21 @@ class ApiTest extends AbstractApiTest
         TestEntityManager::setUpEntityManager($this->testClient->getContainer());
     }
 
+    public function testGetDocumentNotExist(): void
+    {
+        $response = $this->testClient->request('GET', '/co-dms-api/api/documents/nope', [
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+        $this->assertSame(404, $response->getStatusCode());
+        $data = json_decode($response->getContent(false), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame(404, $data['status']);
+        $this->assertArrayHasKey('diagnosticContext', $data);
+        $this->assertSame('RESOURCE_NOT_FOUND', $data['diagnosticContext']['ERROR_CODE']);
+        $this->assertSame('nope', $data['diagnosticContext']['RESOURCE_UID']);
+    }
+
     public function testCreateDocument(): void
     {
         $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);

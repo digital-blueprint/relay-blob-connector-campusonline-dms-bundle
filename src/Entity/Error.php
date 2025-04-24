@@ -13,12 +13,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Serializer;
 
 #[ErrorResource(
-    uriTemplate: '/errors/{status}',
     types: ['hydra:Error'],
     operations: [
         new ApiPlatformError(
             outputFormats: ['json' => ['application/problem+json']],
-            routeName: 'api_errors',
             normalizationContext: [
                 'groups' => ['jsonproblem'],
                 'skip_null_values' => true,
