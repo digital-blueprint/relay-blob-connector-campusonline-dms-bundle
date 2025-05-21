@@ -7,6 +7,7 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 use ApiPlatform\Symfony\Bundle\ApiPlatformBundle;
 use Dbp\Relay\BlobBundle\DbpRelayBlobBundle;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\DbpRelayBlobConnectorCampusonlineDmsBundle;
+use Dbp\Relay\BlobLibrary\Api\BlobApi;
 use Dbp\Relay\CoreBundle\DbpRelayCoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
@@ -24,6 +25,8 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
+
+    public const TEST_BUCKET_ID = 'document-bucket';
 
     public function registerBundles(): iterable
     {
@@ -54,13 +57,16 @@ class Kernel extends BaseKernel
             'annotations' => false,
         ]);
 
-        $container->extension('dbp_relay_blob_connector_campusonline_dms', [
+        $testConfig = [
             'authorization' => [
                 'roles' => [
                     'ROLE_USER' => 'user.get("MAY_USE_CO_DMS_API")',
                 ],
             ],
-        ]);
+        ];
+        $testConfig = array_merge($testConfig, BlobApi::getCustomModeConfig(self::TEST_BUCKET_ID));
+
+        $container->extension('dbp_relay_blob_connector_campusonline_dms', $testConfig);
 
         $container->extension('dbp_relay_blob', DocumentServiceTest::getBLobTestConfig());
     }

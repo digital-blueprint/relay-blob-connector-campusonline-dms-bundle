@@ -4,29 +4,50 @@ declare(strict_types=1);
 
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service;
 
-use Dbp\Relay\BlobBundle\Api\FileApi;
-use Dbp\Relay\BlobBundle\Api\FileApiException;
-use Dbp\Relay\BlobBundle\Entity\FileData;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\DocumentVersionInfo;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\File as FileEntity;
+use Dbp\Relay\BlobLibrary\Api\BlobApi;
+use Dbp\Relay\BlobLibrary\Api\BlobApiError;
+use Dbp\Relay\BlobLibrary\Api\BlobFile;
+use Dbp\Relay\CoreBundle\Rest\Query\Pagination\Pagination;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentService
 {
-    public const BUCKET_ID = 'campusonline-dms-bucket';
-
     private const DOCUMENT_VERSION_METADATA_TYPE = 'document_version'; // config value?
     private const DOCUMENT_VERSION_METADATA_METADATA_KEY = 'doc_version_metadata';
     private const DOCUMENT_METADATA_METADATA_KEY = 'doc_metadata';
     private const VERSION_NUMBER_METADATA_KEY = 'version';
     private const DOCUMENT_TYPE_METADATA_KEY = 'doc_type';
 
-    public function __construct(private readonly FileApi $fileApi)
+    private ?BlobApi $blobApi = null;
+
+    public function __construct(
+        #[Autowire(service: 'service_container')]
+        private readonly ContainerInterface $container)
     {
+    }
+
+    /**
+     * @throws BlobApiError
+     */
+    public function setConfig(array $config): void
+    {
+        $this->blobApi = BlobApi::createFromConfig($config, $this->container);
+    }
+
+    /**
+     * For testing purposes.
+     */
+    public function getBlobApi(): BlobApi
+    {
+        return $this->blobApi;
     }
 
     /**
@@ -34,24 +55,25 @@ class DocumentService
      */
     public function getDocument(string $uid): Document
     {
-        $latestDocumentVersionFileData = null;
+        $latestDocumentVersionBlobFile = null;
         try {
-            foreach ($this->getDocumentVersionFileDataCollection($uid) as $documentVersionFileData) {
-                if ($latestDocumentVersionFileData === null
-                    || $documentVersionFileData->getDateCreated() > $latestDocumentVersionFileData->getDateCreated()) {
-                    $latestDocumentVersionFileData = $documentVersionFileData;
+            /** @var BlobFile $documentVersionBlobFile */
+            foreach ($this->getDocumentVersionBlobFileCollection($uid) as $documentVersionBlobFile) {
+                if ($latestDocumentVersionBlobFile === null
+                    || $documentVersionBlobFile->getDateCreated() > $latestDocumentVersionBlobFile->getDateCreated()) {
+                    $latestDocumentVersionBlobFile = $documentVersionBlobFile;
                 }
             }
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException, 'document', $uid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document', $uid);
         }
 
-        if ($latestDocumentVersionFileData === null) {
+        if ($latestDocumentVersionBlobFile === null) {
             throw new Error(Response::HTTP_NOT_FOUND, 'document not found', 'RESOURCE_NOT_FOUND', $uid);
         }
 
-        $metadata = $this->getMetadataFromFileData($latestDocumentVersionFileData);
-        $documentVersionInfo = $this->createDocumentVersionInfoFromFileData($latestDocumentVersionFileData, $metadata);
+        $metadata = $this->getMetadataFromBlobFile($latestDocumentVersionBlobFile);
+        $documentVersionInfo = $this->createDocumentVersionInfoFromBlobFile($latestDocumentVersionBlobFile, $metadata);
 
         $document = new Document();
         $document->setUid($uid);
@@ -80,11 +102,11 @@ class DocumentService
     public function removeDocument(string $uid): void
     {
         try {
-            foreach ($this->getDocumentVersionFileDataCollection($uid) as $documentVersionFileData) {
-                $this->fileApi->removeFile($documentVersionFileData->getIdentifier());
+            foreach ($this->getDocumentVersionBlobFileCollection($uid) as $documentVersionFileData) {
+                $this->blobApi->removeFile($documentVersionFileData->getIdentifier());
             }
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException, 'document', $uid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document', $uid);
         }
     }
 
@@ -107,9 +129,9 @@ class DocumentService
     public function removeDocumentVersion(string $uid): void
     {
         try {
-            $this->fileApi->removeFile($uid);
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException, 'document version', $uid);
+            $this->blobApi->removeFile($uid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document version', $uid);
         }
     }
 
@@ -119,13 +141,13 @@ class DocumentService
     public function getDocumentVersionInfo(string $uid): ?DocumentVersionInfo
     {
         try {
-            $documentVersionFileData = $this->fileApi->getFile($uid);
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException, 'document version', $uid);
+            $documentVersionFileData = $this->blobApi->getFile($uid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document version', $uid);
         }
 
-        return $this->createDocumentVersionInfoFromFileData($documentVersionFileData,
-            $this->getMetadataFromFileData($documentVersionFileData));
+        return $this->createDocumentVersionInfoFromBlobFile($documentVersionFileData,
+            $this->getMetadataFromBlobFile($documentVersionFileData));
     }
 
     /**
@@ -134,9 +156,9 @@ class DocumentService
     public function getDocumentVersionBinaryFileResponse(string $uid): Response
     {
         try {
-            return $this->fileApi->getBinaryFileResponse($uid);
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException, 'document version', $uid);
+            return $this->blobApi->getFileResponse($uid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document version', $uid);
         }
     }
 
@@ -192,68 +214,65 @@ class DocumentService
             throw new \RuntimeException(sprintf('encoding file metadata failed: %s', $jsonException->getMessage()));
         }
 
-        $fileData = new FileData();
-        $fileData->setFile($uploadedFile);
-        $fileData->setFileName($name);
-        $fileData->setPrefix($document->getUid());
-        $fileData->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
-        $fileData->setMetadata($metadataEncoded);
-        $fileData->setBucketId(self::BUCKET_ID);
+        $blobFile = new BlobFile();
+        $blobFile->setFile($uploadedFile);
+        $blobFile->setFileName($name);
+        $blobFile->setPrefix($document->getUid());
+        $blobFile->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
+        $blobFile->setMetadata($metadataEncoded);
 
         try {
-            $fileData = $this->fileApi->addFile($fileData);
-        } catch (FileApiException $fileApiException) {
-            throw self::createException($fileApiException);
+            $blobFile = $this->blobApi->addFile($blobFile);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError);
         }
 
-        return $this->createDocumentVersionInfoFromFileData($fileData, $metadata);
+        return $this->createDocumentVersionInfoFromBlobFile($blobFile, $metadata);
     }
 
     /**
      * @throws \Exception
      */
-    private function createDocumentVersionInfoFromFileData(FileData $fileData, array $metadata): DocumentVersionInfo
+    private function createDocumentVersionInfoFromBlobFile(BlobFile $blobFile, array $metadata): DocumentVersionInfo
     {
         $documentVersionInfo = new DocumentVersionInfo();
-        $documentVersionInfo->setUid($fileData->getIdentifier());
-        $documentVersionInfo->setName($fileData->getFileName());
+        $documentVersionInfo->setUid($blobFile->getIdentifier());
+        $documentVersionInfo->setName($blobFile->getFileName());
         $documentVersionInfo->setVersionNumber($metadata[self::VERSION_NUMBER_METADATA_KEY]);
-        $documentVersionInfo->setMediaType($fileData->getMimeType());
-        $documentVersionInfo->setSize($fileData->getFileSize());
+        $documentVersionInfo->setMediaType($blobFile->getMimeType());
+        $documentVersionInfo->setSize($blobFile->getFileSize());
         $documentVersionInfo->setMetaData($metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] ?? []);
 
         return $documentVersionInfo;
     }
 
-    /**
-     * @throws \Exception
-     */
-    private function getMetadataFromFileData(FileData $fileData): array
+    private function getMetadataFromBlobFile(BlobFile $blobFile): array
     {
         try {
-            return json_decode($fileData->getMetadata(), true, flags: JSON_THROW_ON_ERROR);
+            return json_decode($blobFile->getMetadata(), true, flags: JSON_THROW_ON_ERROR);
         } catch (\Exception $jsonException) {
             throw new \RuntimeException(sprintf('decoding file metadata failed: %s', $jsonException->getMessage()));
         }
     }
 
     /**
-     * @return FileData[]
-     *
-     * @throws FileApiException
+     * @throws BlobApiError
      */
-    private function getDocumentVersionFileDataCollection(string $uid): array
+    private function getDocumentVersionBlobFileCollection(string $uid): iterable
     {
-        return $this->fileApi->getFiles(self::BUCKET_ID, [FileApi::PREFIX_OPTION => $uid]);
+        return Pagination::getAllResultsPageNumberBased(
+            function (int $currentPageNumber, int $maxNumItemsPerPage) use ($uid) {
+                return $this->blobApi->getFiles($currentPageNumber, $maxNumItemsPerPage, options: [BlobApi::PREFIX_OPTION => $uid]);
+            }, 128);
     }
 
-    private static function createException(FileApiException $fileApiException, ?string $resourceType = null,
+    private static function createException(BlobApiError $blobApiError, ?string $resourceType = null,
         ?string $resourceUid = null): Error
     {
-        return $fileApiException->getCode() === FileApiException::FILE_NOT_FOUND ?
+        return $blobApiError->getErrorId() === BlobApiError::FILE_NOT_FOUND ?
             new Error(Response::HTTP_NOT_FOUND,
                 ($resourceType ?? 'resource').' not found', 'RESOURCE_NOT_FOUND', $resourceUid) :
             new Error(Response::HTTP_INTERNAL_SERVER_ERROR,
-                $fileApiException->getMessage(), strval($fileApiException->getCode()), $resourceUid);
+                $blobApiError->getMessage(), $blobApiError->getErrorId(), $resourceUid, $blobApiError->getBlobErrorId());
     }
 }

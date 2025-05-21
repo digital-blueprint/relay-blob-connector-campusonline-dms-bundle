@@ -22,7 +22,7 @@ class ApiTest extends AbstractApiTest
         $this->testClient = new TestClient(self::createClient());
         $this->testClient->setUpUser(userAttributes: ['MAY_USE_CO_DMS_API' => true]);
         $this->testClient->getClient()->disableReboot();
-        TestEntityManager::setUpEntityManager($this->testClient->getContainer());
+        TestEntityManager::setUpBlobEntityManager($this->testClient->getContainer());
     }
 
     public function testGetDocumentNotExist(): void
@@ -60,6 +60,9 @@ class ApiTest extends AbstractApiTest
                 ],
             ],
         ]);
+        if ($response->getStatusCode() !== Response::HTTP_CREATED) {
+            dump(json_decode($response->getContent(false), true, flags: JSON_THROW_ON_ERROR));
+        }
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $document = json_decode($response->getContent(false), true);
         $documentUid = $document['uid'];

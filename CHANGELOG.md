@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Remove relay-blob-bundle (FileApi) dependency and replace by relay-blob-library, which can be configured to access
+  blob locally (via PHP) or remotely (via HTTP)
+
 ## v0.1.11
 
 * Fix broken error responses with api-platform 4.1
