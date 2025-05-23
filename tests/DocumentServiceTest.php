@@ -32,9 +32,21 @@ class DocumentServiceTest extends ApiTestCase
         return $testConfig;
     }
 
+    /**
+     * @throws BlobApiError
+     */
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->setUpDocumentService();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        BlobTestUtils::tearDown();
     }
 
     /**

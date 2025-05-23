@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Cleanup blob test files (from storage)
+
 ## v0.2.0
 
 - Remove relay-blob-bundle (FileApi) dependency and replace by relay-blob-library, which can be configured to access
