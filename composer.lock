@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef6b5bdd652485af7575a9c8080aa95b",
+    "content-hash": "d3745459ce395bfaf843dbf4859351c4",
     "packages": [
         {
             "name": "api-platform/core",
@@ -8262,16 +8262,16 @@
         },
         {
             "name": "dbp/relay-blob-bundle",
-            "version": "v0.1.76",
+            "version": "v0.1.77",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-blob-bundle.git",
-                "reference": "a08b04a35dde9b7d47b85720d9bb6337d025c39f"
+                "reference": "30125b4c4d0cb6d18ae542e3560ac2f1538a102a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/a08b04a35dde9b7d47b85720d9bb6337d025c39f",
-                "reference": "a08b04a35dde9b7d47b85720d9bb6337d025c39f",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/30125b4c4d0cb6d18ae542e3560ac2f1538a102a",
+                "reference": "30125b4c4d0cb6d18ae542e3560ac2f1538a102a",
                 "shasum": ""
             },
             "require": {
@@ -8336,9 +8336,9 @@
             "description": "A bundle for file-serving, persisting and managing",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-blob-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.1.76"
+                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.1.77"
             },
-            "time": "2025-05-22T16:47:25+00:00"
+            "time": "2025-05-25T10:41:35+00:00"
         },
         {
             "name": "egulias/email-validator",
