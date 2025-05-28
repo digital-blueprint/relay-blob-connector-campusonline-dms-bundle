@@ -15,7 +15,10 @@ use Dbp\Relay\CoreBundle\Rest\Query\Pagination\Pagination;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentService
@@ -156,7 +159,21 @@ class DocumentService
     public function getDocumentVersionBinaryFileResponse(string $uid): Response
     {
         try {
-            return $this->blobApi->getFileResponse($uid);
+            $blobFileStream = $this->blobApi->getFileStream($uid);
+            $fileStream = $blobFileStream->getFileStream();
+
+            return new StreamedResponse(
+                function () use ($fileStream) {
+                    while (!$fileStream->eof()) {
+                        echo $fileStream->read(2048);
+                        flush();
+                    }
+                }, Response::HTTP_OK, [
+                    'Content-Type' => $blobFileStream->getMimeType(),
+                    'Content-Length' => (string) $blobFileStream->getFileSize(),
+                    'Content-Disposition' => HeaderUtils::makeDisposition(
+                        ResponseHeaderBag::DISPOSITION_ATTACHMENT, $blobFileStream->getFileName()),
+                ]);
         } catch (BlobApiError $blobApiError) {
             throw self::createException($blobApiError, 'document version', $uid);
         }

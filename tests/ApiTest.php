@@ -7,9 +7,9 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
 use Dbp\Relay\CoreBundle\TestUtils\AbstractApiTest;
 use Dbp\Relay\CoreBundle\TestUtils\TestClient;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ApiTest extends AbstractApiTest
 {
@@ -116,7 +116,7 @@ class ApiTest extends AbstractApiTest
                     'Accept' => 'application/octet-stream',
                 ]]);
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        assert($response->getKernelResponse() instanceof BinaryFileResponse);
-        $this->assertEquals($file->getContent(), $response->getKernelResponse()->getFile()->getContent());
+        assert($response->getKernelResponse() instanceof StreamedResponse);
+        $this->assertEquals($file->getContent(), $response->getBrowserKitResponse()->getContent());
     }
 }
