@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.1
+
 - Update the blob library and adapt to the new interface signature
 - Cleanup blob test files (from storage)
 
