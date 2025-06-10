@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.2.2
+
 - update the blob library
 
 ## v0.2.1
