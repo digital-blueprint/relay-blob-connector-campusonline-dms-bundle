@@ -7,7 +7,7 @@
         "php": ">=8.2",
         "ext-json": "*",
         "api-platform/core": "^3.4 || ^4.1",
-        "dbp/relay-blob-library": "^0.3.2",
+        "dbp/relay-blob-library": "^0.3.10",
         "dbp/relay-core-bundle": "^0.1.210",
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.3",
@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "captainhook/captainhook": "^5.25",
-        "dbp/relay-blob-bundle": "^0.1.78",
+        "dbp/relay-blob-bundle": "^0.1.81",
         "friendsofphp/php-cs-fixer": "^3.50",
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",

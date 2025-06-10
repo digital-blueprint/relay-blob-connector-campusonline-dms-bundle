@@ -91,9 +91,7 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertEquals($file->getSize(), $document->getLatestVersion()->getSize());
         $this->assertEquals($file->getMimeType(), $document->getLatestVersion()->getMediaType());
 
-        $blobFile = $this->blobApi->getFile($document->getLatestVersion()->getUid());
-        $this->assertInstanceOf(File::class, $blobFile->getFile());
-        $this->assertSame($file->getContent(), $blobFile->getFile()->getContent());
+        $this->assertFileContentsEquals($document->getLatestVersion()->getUid(), $file->getContent());
     }
 
     /**
@@ -120,9 +118,7 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertEquals($file->getSize(), $document->getLatestVersion()->getSize());
         $this->assertEquals($file->getMimeType(), $document->getLatestVersion()->getMediaType());
 
-        $blobFile = $this->blobApi->getFile($document->getLatestVersion()->getUid());
-        $this->assertInstanceOf(File::class, $blobFile->getFile());
-        $this->assertSame($file->getContent(), $blobFile->getFile()->getContent());
+        $this->assertFileContentsEquals($document->getLatestVersion()->getUid(), $file->getContent());
     }
 
     /**
@@ -144,11 +140,12 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertEquals($file->getSize(), $documentVersionInfo->getSize());
         $this->assertEquals($file->getMimeType(), $documentVersionInfo->getMediaType());
 
-        $blobFile = $this->blobApi->getFile($documentVersionInfo->getUid());
-        $this->assertInstanceOf(File::class, $blobFile->getFile());
-        $this->assertSame($file->getContent(), $blobFile->getFile()->getContent());
+        $this->assertFileContentsEquals($documentVersionInfo->getUid(), $file->getContent());
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function createTestDocument(
         array $documentMetadata = ['foo' => 'bar'],
         array $documentVersionMetadata = ['bar' => 'baz'],
@@ -160,6 +157,15 @@ class DocumentServiceTest extends ApiTestCase
 
         return $this->documentService->addDocument(
             $document, $file, self::TEST_FILE_NAME, $documentVersionMetadata, $documentType);
+    }
+
+    /**
+     * @throws BlobApiError
+     */
+    protected function assertFileContentsEquals(string $identifier, string $expectedContent): void
+    {
+        $this->assertEquals($expectedContent,
+            $this->blobApi->getFileStream($identifier)->getFileStream()->getContents());
     }
 
     protected static function getInternalBucketId(): ?string
