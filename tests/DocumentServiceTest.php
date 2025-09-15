@@ -25,9 +25,7 @@ class DocumentServiceTest extends ApiTestCase
     {
         $testConfig = BlobTestUtils::getTestConfig();
         $testConfig['buckets'][0]['bucket_id'] = self::BUCKET_ID;
-        $testConfig['buckets'][0]['additional_types'] = [
-            ['document_version' => __DIR__.'/document_version.schema.json'],
-        ];
+        $testConfig['buckets'][0]['additional_types']['document_version']['json_schema_path'] = __DIR__.'/document_version.schema.json';
 
         return $testConfig;
     }
