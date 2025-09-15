@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "captainhook/captainhook": "^5.25",
-        "dbp/relay-blob-bundle": "^0.1.81",
+        "dbp/relay-blob-bundle": "^0.1.87",
         "friendsofphp/php-cs-fixer": "^3.50",
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",
