@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.3
+
+- update dbp/relay-blob-bundle and adjust the tests accordingly
+
 ## v0.2.2
 
 - update the blob library
