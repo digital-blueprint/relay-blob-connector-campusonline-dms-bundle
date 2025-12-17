@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Serializer;
             provider: DocumentProvider::class
         ),
         new Get(
-            uriTemplate: '/co-dms-api/api/documents/version/{uid}/content',
+            uriTemplate: '/co-dms-api/api/documents/{docUid}/versions/{versionUid}/content',
             outputFormats: [
                 'octet_stream' => 'application/octet-stream',
                 'jsonproblem' => 'application/problem+json',

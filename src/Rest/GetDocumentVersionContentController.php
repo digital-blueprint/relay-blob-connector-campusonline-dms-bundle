@@ -24,11 +24,11 @@ class GetDocumentVersionContentController extends AbstractController
     /**
      * @throws \Exception
      */
-    public function __invoke(Request $request, string $uid): Response
+    public function __invoke(Request $request, string $docUid, string $versionUid): Response
     {
         $this->requireAuthentication();
         $this->authorizationService->denyAccessUnlessHasRoleUser();
 
-        return $this->documentService->getDocumentVersionBinaryFileResponse($uid);
+        return $this->documentService->getDocumentVersionBinaryFileResponse($docUid, $versionUid);
     }
 }

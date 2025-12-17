@@ -8,6 +8,7 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use Dbp\Relay\BlobBundle\TestUtils\BlobTestUtils;
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Document;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Entity\Error;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\BlobLibrary\Api\BlobApi;
 use Dbp\Relay\BlobLibrary\Api\BlobApiError;
@@ -119,6 +120,68 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertFileContentsEquals($document->getLatestVersion()->getUid(), $file->getContent());
     }
 
+    public function testGetDocumentNotFound(): void
+    {
+        $this->expectException(Error::class);
+        $this->documentService->getDocument('nope');
+    }
+
+    public function testRemoveDocument(): void
+    {
+        $document = $this->createTestDocument();
+        $document = $this->documentService->getDocument($document->getUid());
+        $this->assertNotEmpty($document->getUid());
+        $this->documentService->removeDocument($document->getUid());
+        $this->expectException(Error::class);
+        $this->documentService->getDocument($document->getUid());
+    }
+
+    public function testAddDocumentVersion(): void
+    {
+        $document = $this->createTestDocument();
+        $this->assertSame($document->getLatestVersion()->getVersionNumber(), '1');
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $newDoc = $this->documentService->addDocumentVersion($document->getUid(), $file, 'something');
+        $this->assertSame($document->getUid(), $newDoc->getUid());
+        $this->assertSame($newDoc->getLatestVersion()->getVersionNumber(), '2');
+
+        $info = $this->documentService->getDocumentVersionInfo($document->getUid(), $newDoc->getLatestVersion()->getUid());
+        $this->assertSame($info->getVersionNumber(), '2');
+    }
+
+    public function testRemoveDocumentVersion(): void
+    {
+        $document = $this->createTestDocument();
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $newDoc = $this->documentService->addDocumentVersion($document->getUid(), $file, 'something');
+
+        $this->documentService->getDocumentVersionInfo($document->getUid(), $newDoc->getLatestVersion()->getUid());
+        $this->documentService->removeDocumentVersion($newDoc->getUid(), $newDoc->getLatestVersion()->getUid());
+
+        $this->expectException(Error::class);
+        $this->documentService->getDocumentVersionInfo($document->getUid(), $newDoc->getLatestVersion()->getUid());
+    }
+
+    public function testRemoveDocumentVersionWrongDocUid(): void
+    {
+        $document = $this->createTestDocument();
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $newDoc = $this->documentService->addDocumentVersion($document->getUid(), $file, 'something');
+
+        $this->expectException(Error::class);
+        $this->documentService->removeDocumentVersion('nope', $newDoc->getLatestVersion()->getUid());
+    }
+
+    public function testGetDocumentVersionWrongDocUid(): void
+    {
+        $document = $this->createTestDocument();
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $newDoc = $this->documentService->addDocumentVersion($document->getUid(), $file, 'something');
+
+        $this->expectException(Error::class);
+        $this->documentService->getDocumentVersionInfo('nope', $newDoc->getLatestVersion()->getUid());
+    }
+
     /**
      * @throws \Exception
      */
@@ -130,7 +193,7 @@ class DocumentServiceTest extends ApiTestCase
         $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
         $document = $this->createTestDocument(documentVersionMetadata: $documentVersionMetadata);
 
-        $documentVersionInfo = $this->documentService->getDocumentVersionInfo($document->getLatestVersion()->getUid());
+        $documentVersionInfo = $this->documentService->getDocumentVersionInfo($document->getUid(), $document->getLatestVersion()->getUid());
         $this->assertNotEmpty($documentVersionInfo->getUid());
         $this->assertEquals(self::TEST_FILE_NAME, $documentVersionInfo->getName());
         $this->assertEquals($documentVersionMetadata, $documentVersionInfo->getMetadata());

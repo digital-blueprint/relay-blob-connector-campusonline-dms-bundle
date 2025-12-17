@@ -14,7 +14,7 @@ use Dbp\Relay\CoreBundle\Rest\AbstractDataProvider;
  */
 class DocumentVersionInfoProvider extends AbstractDataProvider
 {
-    protected static string $identifierName = 'uid';
+    protected static string $identifierName = 'versionUid';
 
     public function __construct(
         private readonly DocumentService $documentService,
@@ -28,7 +28,9 @@ class DocumentVersionInfoProvider extends AbstractDataProvider
      */
     protected function getItemById(string $id, array $filters = [], array $options = []): ?DocumentVersionInfo
     {
-        return $this->documentService->getDocumentVersionInfo($id);
+        $docUid = $this->getCurrentUriVariables()['docUid'];
+
+        return $this->documentService->getDocumentVersionInfo($docUid, $id);
     }
 
     protected function getPage(int $currentPageNumber, int $maxNumItemsPerPage, array $filters = [], array $options = []): array

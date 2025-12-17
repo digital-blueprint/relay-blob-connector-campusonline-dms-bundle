@@ -68,30 +68,30 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function getDocument(string $uid): Document
+    public function getDocument(string $docUid): Document
     {
         $latestDocumentVersionBlobFile = null;
         try {
             /** @var BlobFile $documentVersionBlobFile */
-            foreach ($this->getDocumentVersionBlobFileCollection($uid) as $documentVersionBlobFile) {
+            foreach ($this->getDocumentVersionBlobFileCollection($docUid) as $documentVersionBlobFile) {
                 if ($latestDocumentVersionBlobFile === null
                     || $documentVersionBlobFile->getDateCreated() > $latestDocumentVersionBlobFile->getDateCreated()) {
                     $latestDocumentVersionBlobFile = $documentVersionBlobFile;
                 }
             }
         } catch (BlobApiError $blobApiError) {
-            throw self::createException($blobApiError, 'document', $uid);
+            throw self::createException($blobApiError, 'document', $docUid);
         }
 
         if ($latestDocumentVersionBlobFile === null) {
-            throw new Error(Response::HTTP_NOT_FOUND, 'document not found', 'RESOURCE_NOT_FOUND', $uid);
+            throw new Error(Response::HTTP_NOT_FOUND, 'document not found', 'RESOURCE_NOT_FOUND', $docUid);
         }
 
         $metadata = $this->getMetadataFromBlobFile($latestDocumentVersionBlobFile);
         $documentVersionInfo = $this->createDocumentVersionInfoFromBlobFile($latestDocumentVersionBlobFile, $metadata);
 
         $document = new Document();
-        $document->setUid($uid);
+        $document->setUid($docUid);
         $document->setLatestVersion($documentVersionInfo);
         $document->setMetaData($metadata[self::DOCUMENT_METADATA_METADATA_KEY] ?? null);
 
@@ -114,24 +114,24 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function removeDocument(string $uid): void
+    public function removeDocument(string $docUid): void
     {
         try {
-            foreach ($this->getDocumentVersionBlobFileCollection($uid) as $documentVersionFileData) {
+            foreach ($this->getDocumentVersionBlobFileCollection($docUid) as $documentVersionFileData) {
                 $this->blobApi->removeFile($documentVersionFileData->getIdentifier());
             }
         } catch (BlobApiError $blobApiError) {
-            throw self::createException($blobApiError, 'document', $uid);
+            throw self::createException($blobApiError, 'document', $docUid);
         }
     }
 
     /**
      * @throws \Exception
      */
-    public function addDocumentVersion(string $documentUid, File $uploadedFile,
+    public function addDocumentVersion(string $docUid, File $uploadedFile,
         string $name, ?array $documentVersionMetadata = null, ?string $documentType = null): ?Document
     {
-        $document = $this->getDocument($documentUid);
+        $document = $this->getDocument($docUid);
         $document->setLatestVersion($this->createDocumentVersion($document, $uploadedFile, $name,
             $documentVersionMetadata, $documentType, $document->getLatestVersion()->getVersionNumber()));
 
@@ -141,24 +141,38 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function removeDocumentVersion(string $uid): void
+    public function removeDocumentVersion(string $docUid, string $versionUid): void
     {
         try {
-            $this->blobApi->removeFile($uid);
+            $documentVersionFileData = $this->blobApi->getFile($versionUid);
         } catch (BlobApiError $blobApiError) {
-            throw self::createException($blobApiError, 'document version', $uid);
+            throw self::createException($blobApiError, 'document version', $versionUid);
+        }
+
+        if ($documentVersionFileData->getPrefix() !== $docUid) {
+            throw new Error(Response::HTTP_NOT_FOUND, 'document version not found', 'RESOURCE_NOT_FOUND', $versionUid);
+        }
+
+        try {
+            $this->blobApi->removeFile($versionUid);
+        } catch (BlobApiError $blobApiError) {
+            throw self::createException($blobApiError, 'document version', $versionUid);
         }
     }
 
     /**
      * @throws \Exception
      */
-    public function getDocumentVersionInfo(string $uid): ?DocumentVersionInfo
+    public function getDocumentVersionInfo(string $docUid, string $versionUid): ?DocumentVersionInfo
     {
         try {
-            $documentVersionFileData = $this->blobApi->getFile($uid);
+            $documentVersionFileData = $this->blobApi->getFile($versionUid);
         } catch (BlobApiError $blobApiError) {
-            throw self::createException($blobApiError, 'document version', $uid);
+            throw self::createException($blobApiError, 'document version', $versionUid);
+        }
+
+        if ($documentVersionFileData->getPrefix() !== $docUid) {
+            throw new Error(Response::HTTP_NOT_FOUND, 'document version not found', 'RESOURCE_NOT_FOUND', $versionUid);
         }
 
         return $this->createDocumentVersionInfoFromBlobFile($documentVersionFileData,
@@ -168,10 +182,15 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function getDocumentVersionBinaryFileResponse(string $uid): Response
+    public function getDocumentVersionBinaryFileResponse(string $docUid, string $versionUid): Response
     {
         try {
-            $blobFileStream = $this->blobApi->getFileStream($uid);
+            $blobFile = $this->blobApi->getFile($versionUid);
+            if ($blobFile->getPrefix() !== $docUid) {
+                throw new Error(Response::HTTP_NOT_FOUND, 'document version not found', 'RESOURCE_NOT_FOUND', $versionUid);
+            }
+
+            $blobFileStream = $this->blobApi->getFileStream($versionUid);
             $fileStream = $blobFileStream->getFileStream();
 
             return new StreamedResponse(
@@ -187,7 +206,7 @@ class DocumentService
                         ResponseHeaderBag::DISPOSITION_ATTACHMENT, $blobFileStream->getFileName()),
                 ]);
         } catch (BlobApiError $blobApiError) {
-            throw self::createException($blobApiError, 'document version', $uid);
+            throw self::createException($blobApiError, 'document version', $versionUid);
         }
     }
 
@@ -266,6 +285,7 @@ class DocumentService
     {
         $documentVersionInfo = new DocumentVersionInfo();
         $documentVersionInfo->setUid($blobFile->getIdentifier());
+        $documentVersionInfo->setDocUid($blobFile->getPrefix());
         $documentVersionInfo->setName($blobFile->getFileName());
         $documentVersionInfo->setVersionNumber($metadata[self::VERSION_NUMBER_METADATA_KEY]);
         $documentVersionInfo->setMediaType($blobFile->getMimeType());
@@ -287,11 +307,11 @@ class DocumentService
     /**
      * @throws BlobApiError
      */
-    private function getDocumentVersionBlobFileCollection(string $uid): iterable
+    private function getDocumentVersionBlobFileCollection(string $docUid): iterable
     {
         return Pagination::getAllResultsPageNumberBased(
-            function (int $currentPageNumber, int $maxNumItemsPerPage) use ($uid) {
-                return $this->blobApi->getFiles($currentPageNumber, $maxNumItemsPerPage, options: [BlobApi::PREFIX_OPTION => $uid]);
+            function (int $currentPageNumber, int $maxNumItemsPerPage) use ($docUid) {
+                return $this->blobApi->getFiles($currentPageNumber, $maxNumItemsPerPage, options: [BlobApi::PREFIX_OPTION => $docUid]);
             }, 128);
     }
 

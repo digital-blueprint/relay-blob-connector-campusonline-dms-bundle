@@ -21,7 +21,11 @@ use Symfony\Component\Serializer\Serializer;
     types: ['https://schema.org/version'],
     operations: [
         new Get(
-            uriTemplate: '/co-dms-api/api/documents/version/{uid}/metadata',
+            uriTemplate: '/co-dms-api/api/documents/{docUid}/versions/{versionUid}/metadata',
+            uriVariables: [
+                'docUid' => 'docUid',
+                'versionUid' => 'uid',
+            ],
             outputFormats: [
                 'json' => 'application/json',
                 'jsonproblem' => 'application/problem+json',
@@ -32,7 +36,11 @@ use Symfony\Component\Serializer\Serializer;
             provider: DocumentVersionInfoProvider::class
         ),
         new Delete(
-            uriTemplate: '/co-dms-api/api/documents/version/{uid}',
+            uriTemplate: '/co-dms-api/api/documents/{docUid}/versions/{versionUid}',
+            uriVariables: [
+                'docUid' => 'docUid',
+                'versionUid' => 'uid',
+            ],
             controller: DeleteDocumentVersionController::class,
             openapi: new Operation(
                 tags: ['Campusonline DMS']
@@ -50,6 +58,8 @@ class DocumentVersionInfo
     #[ApiProperty(identifier: true)]
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $uid = null;
+
+    private ?string $docUid = null;
 
     #[Groups(['BlobConnectorCampusonlineDmsDocumentVersionInfo:output', 'BlobConnectorCampusonlineDmsDocument:output'])]
     private ?string $name = null;
@@ -136,5 +146,15 @@ class DocumentVersionInfo
     public function setMetaData(?array $metaData): void
     {
         $this->metaData = $metaData;
+    }
+
+    public function getDocUid(): ?string
+    {
+        return $this->docUid;
+    }
+
+    public function setDocUid(?string $docUid): void
+    {
+        $this->docUid = $docUid;
     }
 }
