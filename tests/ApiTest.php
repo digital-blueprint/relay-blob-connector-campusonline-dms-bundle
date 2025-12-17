@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
+use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
 use Dbp\Relay\CoreBundle\TestUtils\AbstractApiTest;
 use Dbp\Relay\CoreBundle\TestUtils\TestClient;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -118,5 +119,34 @@ class ApiTest extends AbstractApiTest
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         assert($response->getKernelResponse() instanceof StreamedResponse);
         $this->assertEquals($file->getContent(), $response->getBrowserKitResponse()->getContent());
+    }
+
+    public function testHealthUp()
+    {
+        $response = $this->testClient->get('/co-dms-api/api/health', options: [
+            'headers' => [
+                'Accept' => 'application/json',
+            ]]);
+        $data = json_decode($response->getContent(), flags: JSON_THROW_ON_ERROR);
+        $this->assertStringStartsWith('application/json', $response->getHeaders()['content-type'][0]);
+        $this->assertSame($data->status, 'UP');
+
+        $service = self::getContainer()->get(DocumentService::class);
+        $service->setIsHealthy(false);
+    }
+
+    public function testHealthDown()
+    {
+        $service = self::getContainer()->get(DocumentService::class);
+        $service->setIsHealthy(false);
+
+        $response = $this->testClient->get('/co-dms-api/api/health', options: [
+            'headers' => [
+                'Accept' => 'application/json',
+            ]]);
+        $this->assertStringStartsWith('application/problem+json', $response->getHeaders(false)['content-type'][0]);
+        $data = json_decode($response->getContent(false), flags: JSON_THROW_ON_ERROR);
+        $this->assertSame($data->status, 503);
+        $this->assertSame($data->detail, 'The service is currently unavailable');
     }
 }

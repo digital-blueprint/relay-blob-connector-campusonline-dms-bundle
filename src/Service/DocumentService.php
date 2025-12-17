@@ -31,10 +31,22 @@ class DocumentService
 
     private ?BlobApi $blobApi = null;
 
+    private bool $isHealthy = true;
+
     public function __construct(
         #[Autowire(service: 'service_container')]
         private readonly ContainerInterface $container)
     {
+    }
+
+    public function isHealthy(): bool
+    {
+        return $this->isHealthy;
+    }
+
+    public function setIsHealthy(bool $isHealthy): void
+    {
+        $this->isHealthy = $isHealthy;
     }
 
     /**
