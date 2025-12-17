@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v0.2.4
+
+- Drop support for api-platform 3
+- Move to split api-platform packages
+
 ## v0.2.3
 
 - update dbp/relay-blob-bundle and adjust the tests accordingly
