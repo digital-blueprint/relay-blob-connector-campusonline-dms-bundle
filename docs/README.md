@@ -1,7 +1,4 @@
-# DbpRelayBlobConnectorCampusonlineDmsBundle
-
-[GitHub](https://github.com/digital-blueprint/relay-blob-connector-campusonline-dms-bundle) |
-[Packagist](https://packagist.org/packages/dbp/relay-blob-connector-campusonline-dms-bundle)
+# Overview
 
 The `dbp/relay-blob-connector-campusonline-dms-bundle` is a Symfony bundle that
 provides a connector for the
@@ -18,4 +15,7 @@ graph TB
     style B stroke-width:3px
 ```
 
-See the [documentation](./docs/README.md) for more information.
+## Documentation
+
+* [Bundle Configuration](./config.md)
+* [Provided API](./api.md)
