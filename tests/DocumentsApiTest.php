@@ -60,9 +60,6 @@ class DocumentsApiTest extends AbstractApiTest
                 ],
             ],
         ]);
-        if ($response->getStatusCode() !== Response::HTTP_CREATED) {
-            dump(json_decode($response->getContent(false), true, flags: JSON_THROW_ON_ERROR));
-        }
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $document = json_decode($response->getContent(false), true);
         $documentUid = $document['uid'];

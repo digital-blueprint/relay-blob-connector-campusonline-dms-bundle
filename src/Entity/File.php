@@ -15,6 +15,7 @@ use ApiPlatform\OpenApi\Model\RequestBody;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\FileProcessor;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Rest\FileProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     shortName: 'BlobConnectorCampusonlineDmsFile',
@@ -105,7 +106,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             processor: FileProcessor::class
         ),
     ],
-    normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsFile:output']],
+    normalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsFile:output'], 'json_encode_options' => JSON_FORCE_OBJECT, 'skip_null_values' => true],
     denormalizationContext: ['groups' => ['BlobConnectorCampusonlineDmsFile:input']]
 )]
 class File
@@ -116,10 +117,12 @@ class File
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsFile:input'])]
+    #[Assert\NotNull]
     private ?string $fileType = null;
 
     #[ApiProperty(iris: ['https://schema.org/additionalProperty'])]
     #[Groups(['BlobConnectorCampusonlineDmsFile:output', 'BlobConnectorCampusonlineDmsFile:input'])]
+    #[Assert\NotNull]
     private ?array $metaData = null;
 
     public function getUid(): ?string
