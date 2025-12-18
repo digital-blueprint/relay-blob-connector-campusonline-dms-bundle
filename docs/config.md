@@ -36,6 +36,18 @@ dbp_relay_blob_connector_campusonline_dms:
             send_checksums:       true
 ```
 
+Minimal example configuration:
+
+```yaml
+dbp_relay_blob_connector_campusonline_dms:
+    blob_library:
+        bucket_identifier: "campusonline-dms-bucket"
+        use_http_mode: false
+    authorization:
+        roles:
+            ROLE_USER: 'user.get("SCOPE_CAMPUSONLINE_DMS")'
+```
+
 ## Authorization
 
 There only exists one "ROLE_USER" role, which if granted to the current user,
