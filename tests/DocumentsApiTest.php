@@ -214,6 +214,47 @@ class DocumentsApiTest extends AbstractApiTest
         $this->assertSame($documentVersionUid, $data['diagnosticContext']['RESOURCE_UID']);
     }
 
+    public function testCreateDocumentMissingParameters(): void
+    {
+        $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);
+        $response = $this->testClient->request('POST', '/co-dms-api/api/documents', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ],
+            'extra' => [
+                'files' => [
+                    'binary_content' => $file,
+                ],
+                'parameters' => [
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testCreateDocumentMissingFile(): void
+    {
+        $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);
+        $response = $this->testClient->request('POST', '/co-dms-api/api/documents', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ],
+            'extra' => [
+                'parameters' => [
+                    'name' => self::TEST_FILE_NAME,
+                    'document_type' => self::TEST_DOCUMENT_TYPE,
+                    'metadata' => '{}',
+                    'doc_version_metadata' => '{"bar": "baz"}',
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
     public function testGetDocumentVersionMetadata(): void
     {
         $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);
