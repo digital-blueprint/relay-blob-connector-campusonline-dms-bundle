@@ -18,6 +18,7 @@ class FileProcessor extends AbstractDataProcessor
         private readonly DocumentService $documentService,
         private readonly AuthorizationService $authorizationService)
     {
+        parent::__construct();
     }
 
     protected function addItem(mixed $data, array $filters): File

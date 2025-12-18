@@ -14,6 +14,7 @@ class DocumentProcessor extends AbstractDataProcessor
 
     public function __construct(private readonly DocumentService $documentService)
     {
+        parent::__construct();
     }
 
     /**
