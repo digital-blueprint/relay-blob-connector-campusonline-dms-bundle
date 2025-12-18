@@ -71,11 +71,22 @@ class DocumentService
     public function getDocument(string $docUid): Document
     {
         $latestDocumentVersionBlobFile = null;
+
+        $getVersion = function (BlobFile $f): int {
+            $meta = $this->getMetadataFromBlobFile($f);
+            $versionString = $meta[self::VERSION_NUMBER_METADATA_KEY] ?? null;
+            if ($versionString === null || !is_numeric($versionString)) {
+                throw new \RuntimeException('missing version');
+            }
+
+            return intval($versionString);
+        };
+
         try {
             /** @var BlobFile $documentVersionBlobFile */
             foreach ($this->getDocumentVersionBlobFileCollection($docUid) as $documentVersionBlobFile) {
                 if ($latestDocumentVersionBlobFile === null
-                    || $documentVersionBlobFile->getDateCreated() > $latestDocumentVersionBlobFile->getDateCreated()) {
+                    || $getVersion($documentVersionBlobFile) > $getVersion($latestDocumentVersionBlobFile)) {
                     $latestDocumentVersionBlobFile = $documentVersionBlobFile;
                 }
             }

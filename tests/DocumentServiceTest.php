@@ -147,6 +147,9 @@ class DocumentServiceTest extends ApiTestCase
 
         $info = $this->documentService->getDocumentVersionInfo($document->getUid(), $newDoc->getLatestVersion()->getUid());
         $this->assertSame($info->getVersionNumber(), '2');
+
+        $newNewDoc = $this->documentService->getDocument($document->getUid());
+        $this->assertSame('2', $newNewDoc->getLatestVersion()->getVersionNumber());
     }
 
     public function testRemoveDocumentVersion(): void
