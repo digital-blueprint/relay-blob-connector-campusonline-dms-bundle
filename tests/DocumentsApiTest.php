@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class ApiTest extends AbstractApiTest
+class DocumentsApiTest extends AbstractApiTest
 {
     private const TEST_FILE_NAME = 'test.txt';
     private const TEST_FILE_PATH = __DIR__.'/'.self::TEST_FILE_NAME;
