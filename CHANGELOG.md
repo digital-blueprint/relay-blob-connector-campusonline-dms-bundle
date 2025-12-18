@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.2.5
+
+- Update exposed HTTP APIs to match the latest "CAMPUSonline External Object Store API" specification
+- Fix document version order being incorrect in some cases
+- Added some docs
+
 ## v0.2.4
 
 - Drop support for api-platform 3
