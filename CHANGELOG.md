@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.2.6
+
+- Add support for Symfony 7
+
 ## v0.2.5
 
 - Update exposed HTTP APIs to match the latest "CAMPUSonline External Object Store API" specification
