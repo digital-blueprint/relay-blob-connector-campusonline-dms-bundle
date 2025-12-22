@@ -25,7 +25,7 @@
     "require-dev": {
         "api-platform/symfony": "^4.1",
         "captainhook/captainhook": "^5.25",
-        "dbp/relay-blob-bundle": "^0.1.87",
+        "dbp/relay-blob-bundle": "^0.2.0",
         "friendsofphp/php-cs-fixer": "^3.50",
         "phpstan/phpstan": "^2.0.0",
         "phpstan/phpstan-phpunit": "^2.0.0",
