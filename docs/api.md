@@ -1,7 +1,9 @@
 # Provided API
 
-See the OpenAPI specification for the "CAMPUSonline External Object Store API"
-for details.
+This implements the "CAMPUSonline External Object Store API".
+
+The OpenAPI specification and other details are not publicly available, but can
+be requested by contacting CAMPUSonline at <campusonline@tugraz.at>
 
 ## Managing Documents
 
