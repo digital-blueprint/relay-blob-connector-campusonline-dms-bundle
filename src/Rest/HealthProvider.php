@@ -23,8 +23,7 @@ class HealthProvider implements StateProviderInterface
 
         if ($this->documentService->isHealthy()) {
             return new Health();
-        } else {
-            throw new Error(503, 'The service is currently unavailable');
         }
+        throw new Error(503, 'The service is currently unavailable');
     }
 }
