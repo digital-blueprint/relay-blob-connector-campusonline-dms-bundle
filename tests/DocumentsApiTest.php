@@ -474,6 +474,56 @@ class DocumentsApiTest extends AbstractApiTest
         $this->assertEquals(['version' => '42'], $latestVersion['metaData']);
     }
 
+    public function testCreateDocumentVersionMinimumData(): void
+    {
+        $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);
+        $response = $this->testClient->request('POST', '/co-dms-api/api/documents', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ],
+            'extra' => [
+                'files' => [
+                    'binary_content' => $file,
+                ],
+                'parameters' => [
+                    'document_type' => self::TEST_DOCUMENT_TYPE,
+                    'name' => 'new_version.txt',
+                    'metadata' => '{}',
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $document = json_decode($response->getContent(false), true);
+        $documentUid = $document['uid'];
+
+        $newFile = new UploadedFile(self::TEST_FILE_PATH, 'minimal_version.txt');
+        $response = $this->testClient->request('POST', '/co-dms-api/api/documents/'.$documentUid.'/version', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ],
+            'extra' => [
+                'files' => [
+                    'binary_content' => $newFile,
+                ],
+                'parameters' => [
+                    'document_type' => self::TEST_DOCUMENT_TYPE,
+                    'name' => 'minimal_version.txt',
+                ],
+            ],
+        ]);
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $documentVersion = json_decode($response->getContent(false), true);
+        $this->assertNotEmpty($documentVersion['uid']);
+        $latestVersion = $documentVersion['latestVersion'];
+        $this->assertEquals('2', $latestVersion['versionNumber']);
+        $this->assertEquals('text/plain', $latestVersion['mediaType']);
+        $this->assertEquals($newFile->getSize(), $latestVersion['size']);
+    }
+
     public function testDeleteDocument(): void
     {
         $file = new UploadedFile(self::TEST_FILE_PATH, self::TEST_FILE_NAME);
