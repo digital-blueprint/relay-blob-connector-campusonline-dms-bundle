@@ -33,6 +33,14 @@ class CreateDocumentVersionController extends AbstractController
 
         $name = $request->request->get('name');
         $documentType = $request->request->get('document_type');
+        if ($documentType === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'document_type\' missing',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'document_type');
+        }
+        if ($name === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'name\' missing',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'name');
+        }
 
         $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
