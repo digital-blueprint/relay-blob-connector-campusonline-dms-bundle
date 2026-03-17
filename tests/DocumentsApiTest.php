@@ -566,4 +566,73 @@ class DocumentsApiTest extends AbstractApiTest
 
         $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
     }
+
+    public function testCreateDocumentReal(): void
+    {
+        $file = new UploadedFile(self::TEST_FILE_PATH, 'file.dat', 'application/octet-stream');
+
+        $metadata = [
+            'objectVersion' => [
+                'uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
+                'verificationToken' => 'mK7RNxpL2BW891qwYjhdQ',
+                'verificationKeyLength' => '16',
+                'createdAtUtc' => '2026-03-17T09:53:24.681218000Z',
+                'fileName' => 'studienblatt_11424242_2025W_1.pdf',
+                'versionNumber' => '1',
+                'mediaType' => 'application/pdf',
+            ],
+            'semester' => [
+                'key' => '2025W',
+            ],
+            'student' => [
+                'coIdentIdObfuscated' => 'DED9BC3A5664684B',
+                'matriculationNumber' => '11424242',
+                'firstName' => 'Lara',
+                'surname' => 'Musterfrau',
+                'studentStatusKey' => 'O',
+                'enrolmentDate' => '2024-03-13',
+            ],
+            'object' => [
+                'uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                'createdAtUtc' => '2026-03-17T09:53:24.673157000Z',
+                'addresseeDcIdentIdObfuscated' => 'CC007204B617AB26',
+                'fileName' => 'studienblatt_11424242_2025W.pdf',
+                'lastVersionNumber' => '1',
+                'objectTypeKey' => 'RECORD_OF_STUDIES',
+            ],
+        ];
+
+        $parameters = [
+            'name' => 'studienblatt_11424242_2025W.pdf',
+            'document_type' => 'RECORD_OF_STUDIES',
+            'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+            'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
+            'metadata' => json_encode($metadata, flags: JSON_THROW_ON_ERROR),
+            'addresseeIdObfuscated' => 'CC007204B617AB26',
+        ];
+
+        $response = $this->testClient->request('POST', '/co-dms-api/api/documents', [
+            'headers' => [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ],
+            'extra' => [
+                'files' => [
+                    'binary_content' => $file,
+                ],
+                'parameters' => $parameters,
+            ],
+        ]);
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $document = json_decode($response->getContent(false), true, flags: JSON_THROW_ON_ERROR);
+        $documentUid = $document['uid'];
+        $this->assertNotEmpty($documentUid);
+        $this->assertEquals($metadata, $document['metaData']);
+
+        // These match
+        $this->assertEquals($parameters['doc_uuid'], $document['metaData']['object']['uuid']);
+        $this->assertEquals($parameters['doc_version_uuid'], $document['metaData']['objectVersion']['uuid']);
+        $this->assertEquals($parameters['addresseeIdObfuscated'], $document['metaData']['object']['addresseeDcIdentIdObfuscated']);
+    }
 }
