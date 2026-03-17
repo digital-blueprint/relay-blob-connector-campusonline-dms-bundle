@@ -42,6 +42,19 @@ class CreateDocumentVersionController extends AbstractController
                 errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'name');
         }
 
+        $docUuid = $request->request->get('docUuid');
+        if ($docUuid !== null) {
+            Common::validateUuid('doc_uuid', $docUuid);
+        }
+
+        $docVersionUuid = $request->request->get('uuid');
+        if ($docVersionUuid !== null) {
+            Common::validateUuid('uuid', $docVersionUuid);
+        }
+
+        $addresseeIdObfuscated = $request->request->get('addresseeIdObfuscated');
+        assert($addresseeIdObfuscated === null || is_string($addresseeIdObfuscated));
+
         $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
         $documentVersionMetadataArray = null;
