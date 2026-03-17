@@ -43,6 +43,36 @@ class FilesApiTest extends AbstractApiTest
         ], $file['metaData']);
     }
 
+    public function testCreateFileAllParams(): void
+    {
+        $response = $this->testClient->request('POST', '/co-dms-api/api/files', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ],
+            'json' => [
+                'fileType' => 'TEST_FILE_TYPE',
+                'metaData' => [
+                    'title' => 'Test Dossier',
+                    'description' => 'Test Description',
+                ],
+                'uuid' => '5a115f47-8e22-4b0a-997a-8831ea3b6b1d',
+                'addresseeIdObfuscated' => 'CC007204B617AB26',
+            ],
+        ]);
+
+        $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
+        $file = json_decode($response->getContent(false), true);
+
+        $this->assertNotEmpty($file['uid']);
+        $this->assertArrayNotHasKey('addresseeIdObfuscated', $file);
+        $this->assertArrayNotHasKey('uuid', $file);
+        $this->assertEquals([
+            'title' => 'Test Dossier',
+            'description' => 'Test Description',
+        ], $file['metaData']);
+    }
+
     public function testCreateFileMissingMetadata(): void
     {
         $response = $this->testClient->request('POST', '/co-dms-api/api/files', [

@@ -55,8 +55,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                                         'type' => 'object',
                                         'example' => '{"foo": "bar"}',
                                     ],
+                                    'uuid' => [
+                                        'type' => 'string',
+                                        'example' => 'c60473c8-a8ac-40f5-ac5e-1ba84fbe84de',
+                                    ],
+                                    'addresseeIdObfuscated' => [
+                                        'type' => 'string',
+                                        'example' => 'CC007204B617AB26',
+                                    ],
                                 ],
-                                'required' => ['fileType'],
+                                'required' => ['fileType', 'metaData'],
                             ],
                         ],
                     ])
@@ -87,8 +95,16 @@ use Symfony\Component\Validator\Constraints as Assert;
                                         'type' => 'object',
                                         'example' => '{"foo": "bar"}',
                                     ],
+                                    'uuid' => [
+                                        'type' => 'string',
+                                        'example' => 'c60473c8-a8ac-40f5-ac5e-1ba84fbe84de',
+                                    ],
+                                    'addresseeIdObfuscated' => [
+                                        'type' => 'string',
+                                        'example' => 'CC007204B617AB26',
+                                    ],
                                 ],
-                                'required' => ['fileType'],
+                                'required' => ['fileType', 'metaData'],
                             ],
                         ],
                     ])
@@ -125,6 +141,14 @@ class File
     #[Assert\NotNull]
     private ?array $metaData = null;
 
+    #[ApiProperty()]
+    #[Groups(['BlobConnectorCampusonlineDmsFile:input'])]
+    private ?string $uuid = null;
+
+    #[ApiProperty()]
+    #[Groups(['BlobConnectorCampusonlineDmsFile:input'])]
+    private ?string $addresseeIdObfuscated = null;
+
     public function getUid(): ?string
     {
         return $this->uid;
@@ -153,5 +177,25 @@ class File
     public function setMetaData(?array $metaData): void
     {
         $this->metaData = $metaData;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function getAddresseeIdObfuscated(): ?string
+    {
+        return $this->addresseeIdObfuscated;
+    }
+
+    public function setUuid(?string $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function setAddresseeIdObfuscated(?string $addresseeIdObfuscated): void
+    {
+        $this->addresseeIdObfuscated = $addresseeIdObfuscated;
     }
 }

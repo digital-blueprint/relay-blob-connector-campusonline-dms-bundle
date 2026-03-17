@@ -25,6 +25,10 @@ class FileProcessor extends AbstractDataProcessor
     {
         assert($data instanceof File);
 
+        if ($data->getUuid() !== null) {
+            Common::validateUuid('uuid', $data->getUuid());
+        }
+
         return $this->documentService->addFile($data);
     }
 
