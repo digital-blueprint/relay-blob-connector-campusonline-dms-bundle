@@ -41,8 +41,8 @@ class CreateDocumentController extends AbstractController
         $uploadedFile = Common::getAndValidateUploadedFile($request, 'binary_content');
 
         $metadata = $request->request->get('metadata');
-        if (!$metadata) {
-            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'metadata\' must not be empty',
+        if ($metadata === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'metadata\' is missing',
                 errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'metadata');
         }
 
@@ -53,6 +53,25 @@ class CreateDocumentController extends AbstractController
                 errorCode: 'RESOURCE_MALFORMED_MDATA', errorDetail: 'metadata');
         }
         $documentType = $request->request->get('document_type');
+
+        $docUuid = $request->request->get('doc_uuid');
+        if ($docUuid === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'doc_uuid\' is missing',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'doc_uuid');
+        }
+        assert(is_string($docUuid));
+        Common::validateUuid('doc_uuid', $docUuid);
+
+        $docVersionUuid = $request->request->get('doc_version_uuid');
+        if ($docVersionUuid === null) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'parameter \'doc_version_uuid\' is missing',
+                errorCode: 'REQUIRED_PARAMETER_MISSING', errorDetail: 'doc_version_uuid');
+        }
+        assert(is_string($docVersionUuid));
+        Common::validateUuid('doc_version_uuid', $docVersionUuid);
+
+        $addresseeIdObfuscated = $request->request->get('addresseeIdObfuscated');
+        assert($addresseeIdObfuscated === null || is_string($addresseeIdObfuscated));
 
         $document = new Document();
         $document->setMetaData($metadataArray);

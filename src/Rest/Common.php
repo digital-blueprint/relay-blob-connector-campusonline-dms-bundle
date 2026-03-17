@@ -37,4 +37,22 @@ class Common
 
         return $uploadedFile;
     }
+
+    /**
+     * Validates that a given string parameter is a valid UUID.
+     *
+     * Throws if not.
+     */
+    public static function validateUuid(string $parameterName, string $value): void
+    {
+        $valid = (bool) preg_match(
+            '/^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/',
+            $value
+        );
+
+        if (!$valid) {
+            throw new Error(Response::HTTP_BAD_REQUEST, 'Parameter \''.$parameterName.'\' must be a UUID',
+                errorCode: 'PARAMETER_TYPE_INVALID', errorDetail: $parameterName);
+        }
+    }
 }

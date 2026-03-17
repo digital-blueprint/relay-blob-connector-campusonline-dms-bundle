@@ -57,9 +57,12 @@ class DocumentsApiTest extends AbstractApiTest
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{"foo": "bar"}',
                     'doc_version_metadata' => '{"bar": "baz"}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
+
         $this->assertEquals(Response::HTTP_CREATED, $response->getStatusCode());
         $document = json_decode($response->getContent(false), true);
         $documentUid = $document['uid'];
@@ -134,6 +137,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'name' => self::TEST_FILE_NAME,
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -172,6 +177,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'name' => self::TEST_FILE_NAME,
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -272,6 +279,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
                     'doc_version_metadata' => '{"bar": "baz"}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -317,6 +326,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
                     'doc_version_metadata' => '{"bar": "baz"}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -377,6 +388,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'name' => self::TEST_FILE_NAME,
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -434,6 +447,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'name' => self::TEST_FILE_NAME,
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -490,6 +505,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'name' => 'new_version.txt',
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
@@ -540,6 +557,8 @@ class DocumentsApiTest extends AbstractApiTest
                     'name' => self::TEST_FILE_NAME,
                     'document_type' => self::TEST_DOCUMENT_TYPE,
                     'metadata' => '{}',
+                    'doc_uuid' => '68cb9618-722e-461b-accf-2769e07f6b56',
+                    'doc_version_uuid' => '89105fc2-4ebe-4165-847f-4ea976ac32c9',
                 ],
             ],
         ]);
