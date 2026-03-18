@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.3.0
+
+- Update to "CAMPUSonline Object Store API" v3.0.3
+- Drop support for Symfony 6
+- Drop support for api-platform 4.1
+
 ## v0.2.6
 
 - Add support for Symfony 7
