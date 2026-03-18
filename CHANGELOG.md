@@ -8,7 +8,7 @@
 
 ## v0.2.5
 
-- Update exposed HTTP APIs to match the latest "CAMPUSonline External Object Store API" specification
+- Update exposed HTTP APIs to match the latest "CAMPUSonline Object Store API" specification (v2.1.0)
 - Fix document version order being incorrect in some cases
 - Added some docs
 

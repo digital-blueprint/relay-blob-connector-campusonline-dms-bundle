@@ -51,4 +51,4 @@ dbp_relay_blob_connector_campusonline_dms:
 ## Authorization
 
 There only exists one "ROLE_USER" role, which if granted to the current user,
-allows access to the CAMPUSonline External Object Store API.
+allows access to the CAMPUSonline Object Store API.

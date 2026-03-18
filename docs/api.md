@@ -1,6 +1,6 @@
 # Provided API
 
-This implements the "CAMPUSonline External Object Store API".
+This implements the "CAMPUSonline Object Store API".
 
 The OpenAPI specification and other details are not publicly available, but can
 be requested by contacting CAMPUSonline at <campusonline@tugraz.at>
