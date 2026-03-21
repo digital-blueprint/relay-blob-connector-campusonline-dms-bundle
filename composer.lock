@@ -399,7 +399,7 @@
         },
         {
             "name": "api-platform/metadata",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/metadata.git",
@@ -491,13 +491,13 @@
                 "swagger"
             ],
             "support": {
-                "source": "https://github.com/api-platform/metadata/tree/v4.3.0"
+                "source": "https://github.com/api-platform/metadata/tree/v4.3.1"
             },
             "time": "2026-03-13T14:49:56+00:00"
         },
         {
             "name": "api-platform/openapi",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/openapi.git",
@@ -582,7 +582,7 @@
                 "swagger"
             ],
             "support": {
-                "source": "https://github.com/api-platform/openapi/tree/v4.3.0"
+                "source": "https://github.com/api-platform/openapi/tree/v4.3.1"
             },
             "time": "2026-03-06T15:07:49+00:00"
         },
@@ -682,16 +682,16 @@
         },
         {
             "name": "api-platform/state",
-            "version": "v4.3.0",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/state.git",
-                "reference": "663c00f610f076f5cac8b13755805d9b5d97ff4c"
+                "reference": "fc42812fb601b7c83aa43216d4329e89df79fe82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/state/zipball/663c00f610f076f5cac8b13755805d9b5d97ff4c",
-                "reference": "663c00f610f076f5cac8b13755805d9b5d97ff4c",
+                "url": "https://api.github.com/repos/api-platform/state/zipball/fc42812fb601b7c83aa43216d4329e89df79fe82",
+                "reference": "fc42812fb601b7c83aa43216d4329e89df79fe82",
                 "shasum": ""
             },
             "require": {
@@ -705,7 +705,7 @@
             },
             "require-dev": {
                 "api-platform/serializer": "^4.3",
-                "api-platform/validator": "^4.3",
+                "api-platform/validator": "^4.3.1",
                 "phpunit/phpunit": "^12.2",
                 "symfony/http-foundation": "^6.4.14 || ^7.0 || ^8.0",
                 "symfony/object-mapper": "^7.4 || ^8.0",
@@ -773,9 +773,9 @@
                 "swagger"
             ],
             "support": {
-                "source": "https://github.com/api-platform/state/tree/v4.3.0"
+                "source": "https://github.com/api-platform/state/tree/v4.3.1"
             },
-            "time": "2026-03-13T13:27:59+00:00"
+            "time": "2026-03-17T15:43:29+00:00"
         },
         {
             "name": "api-platform/symfony",
@@ -1092,16 +1092,16 @@
         },
         {
             "name": "dbp/relay-core-bundle",
-            "version": "v0.1.232",
+            "version": "v0.1.233",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-core-bundle.git",
-                "reference": "97628343b63bbb985a47348abe94c9428e1d8b1c"
+                "reference": "1a507b1eb5c60067a8e3789bd83c5c708596180f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/97628343b63bbb985a47348abe94c9428e1d8b1c",
-                "reference": "97628343b63bbb985a47348abe94c9428e1d8b1c",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-core-bundle/zipball/1a507b1eb5c60067a8e3789bd83c5c708596180f",
+                "reference": "1a507b1eb5c60067a8e3789bd83c5c708596180f",
                 "shasum": ""
             },
             "require": {
@@ -1198,9 +1198,9 @@
             "description": "The core bundle of the Relay API gateway",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-core-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.232"
+                "source": "https://github.com/digital-blueprint/relay-core-bundle/tree/v0.1.233"
             },
-            "time": "2026-03-10T14:35:28+00:00"
+            "time": "2026-03-17T09:26:10+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -9271,23 +9271,23 @@
         },
         {
             "name": "dbp/relay-blob-bundle",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-blob-bundle.git",
-                "reference": "b1459338ef29caa11cbfec43296884302a748902"
+                "reference": "830277173cb7c1d4b3ac9e89156c60c0be7c5669"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/b1459338ef29caa11cbfec43296884302a748902",
-                "reference": "b1459338ef29caa11cbfec43296884302a748902",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/830277173cb7c1d4b3ac9e89156c60c0be7c5669",
+                "reference": "830277173cb7c1d4b3ac9e89156c60c0be7c5669",
                 "shasum": ""
             },
             "require": {
                 "api-platform/metadata": " ^4.1",
                 "api-platform/openapi": " ^4.1",
                 "dbp/relay-blob-library": "^0.3.10",
-                "dbp/relay-core-bundle": "^0.1.212",
+                "dbp/relay-core-bundle": "^0.1.232",
                 "dbp/relay-verity-bundle": "^0.1.4",
                 "doctrine/dbal": "^3.8 || ^4.0",
                 "doctrine/doctrine-bundle": "^2.13",
@@ -9304,21 +9304,21 @@
                 "psr/log": "^1.0 || ^2 || ^3",
                 "ramsey/uuid": "^4.7",
                 "ramsey/uuid-doctrine": "^2.0",
-                "symfony/config": "^6.4 || ^7.4",
-                "symfony/console": "^6.4 || ^7.4",
-                "symfony/dependency-injection": "^6.4 || ^7.4",
-                "symfony/event-dispatcher": "^6.4 || ^7.4",
+                "symfony/config": "^7.4",
+                "symfony/console": "^7.4",
+                "symfony/dependency-injection": "^7.4",
+                "symfony/event-dispatcher": "^7.4",
                 "symfony/event-dispatcher-contracts": "^2.5 || ^3",
-                "symfony/framework-bundle": "^6.4 || ^7.4",
-                "symfony/http-foundation": "^6.4 || ^7.4",
-                "symfony/http-kernel": "^6.4 || ^7.4",
-                "symfony/mailer": "^6.4 || ^7.4",
-                "symfony/messenger": "^6.4 || ^7.4",
-                "symfony/mime": "^6.4 || ^7.4",
-                "symfony/psr-http-message-bridge": "^6.4 || ^7.4",
-                "symfony/security-core": "^6.4 || ^7.4",
-                "symfony/serializer": "^6.4 || ^7.4",
-                "symfony/uid": "^6.4 || ^7.4",
+                "symfony/framework-bundle": "^7.4",
+                "symfony/http-foundation": "^7.4",
+                "symfony/http-kernel": "^7.4",
+                "symfony/mailer": "^7.4",
+                "symfony/messenger": "^7.4",
+                "symfony/mime": "^7.4",
+                "symfony/psr-http-message-bridge": "^7.4",
+                "symfony/security-core": "^7.4",
+                "symfony/serializer": "^7.4",
+                "symfony/uid": "^7.4",
                 "twig/twig": "^3.8"
             },
             "require-dev": {
@@ -9329,13 +9329,13 @@
                 "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",
                 "phpunit/phpunit": "^11.5",
-                "symfony/browser-kit": "^6.4 || ^7.4",
-                "symfony/error-handler": "^6.4 || ^7.4",
-                "symfony/http-client": "^6.4 || ^7.4",
-                "symfony/monolog-bridge": "^6.4 || ^7.4",
+                "symfony/browser-kit": "^7.4",
+                "symfony/error-handler": "^7.4",
+                "symfony/http-client": "^7.4",
+                "symfony/monolog-bridge": "^7.4",
                 "symfony/monolog-bundle": "^3.10 || ^4.0",
                 "symfony/phpunit-bridge": "^7.0.4",
-                "symfony/runtime": "^6.4 || ^7.4"
+                "symfony/runtime": "^7.4"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -9350,9 +9350,9 @@
             "description": "A bundle for file-serving, persisting and managing",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-blob-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.2.0"
+                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.2.1"
             },
-            "time": "2025-12-17T09:40:29+00:00"
+            "time": "2026-03-18T09:55:52+00:00"
         },
         {
             "name": "dbp/relay-verity-bundle",
