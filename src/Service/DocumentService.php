@@ -148,7 +148,7 @@ class DocumentService
     {
         $document = $this->getDocument($docUid);
         $document->setLatestVersion($this->createDocumentVersion($document, $uploadedFile, $name,
-            $documentVersionMetadata, $documentType, $document->getLatestVersion()->getVersionNumber()));
+            $documentVersionMetadata, $documentType));
 
         return $document;
     }
@@ -255,20 +255,40 @@ class DocumentService
      * @throws \Exception
      */
     private function createDocumentVersion(Document $document, File $uploadedFile, string $name,
-        ?array $documentVersionMetadata = null, ?string $documentType = null, ?string $lastVersion = null): DocumentVersionInfo
+        ?array $documentVersionMetadata = null, ?string $documentType = null): DocumentVersionInfo
     {
-        $versionNumber = $lastVersion ? strval(intval($lastVersion) + 1) : '1';
-
         $metadata = [];
-        $metadata[self::VERSION_NUMBER_METADATA_KEY] = $versionNumber;
-        if ($document->getMetaData() !== null) {
-            $metadata[self::DOCUMENT_METADATA_METADATA_KEY] = $document->getMetaData();
+
+        $documentMetadata = $document->getMetadata();
+
+        if ($documentMetadata !== null) {
+            $metadata[self::DOCUMENT_METADATA_METADATA_KEY] = $documentMetadata;
         }
         if ($documentVersionMetadata !== null) {
             $metadata[self::DOCUMENT_VERSION_METADATA_METADATA_KEY] = $documentVersionMetadata;
         }
         if ($documentType !== null) {
             $metadata[self::DOCUMENT_TYPE_METADATA_KEY] = $documentType;
+        }
+
+        // XXX: In theory it is racy to decide the version based on the current latest version in case
+        // two requests adding new versions happen at the same time. Since the API requires from us to give
+        // back the latest version but doesn't give us any version to decide the order I assume that the API is not
+        // designed to be run in parallel and this race condition can be ignored.
+        $lastVersionInfo = $document->getLatestVersion();
+        $lastVersion = $lastVersionInfo !== null ? $lastVersionInfo->getVersionNumber() : null;
+        $versionNumber = $lastVersion !== null ? strval(intval($lastVersion) + 1) : '1';
+        $metadata[self::VERSION_NUMBER_METADATA_KEY] = $versionNumber;
+
+        // XXX: since the metadata contains a version we will prefer that to avoid any issues from
+        // the above. We fall back to the manually incremented version if it's not available (I've never seen it)
+        // Prefer version specific metadata over the main one.
+        $versionMetadata = $documentVersionMetadata ?? $documentMetadata;
+        if ($versionMetadata !== null) {
+            $objectVersion = $versionMetadata['objectVersion'] ?? [];
+            if (isset($objectVersion['versionNumber'])) {
+                $metadata[self::VERSION_NUMBER_METADATA_KEY] = $objectVersion['versionNumber'];
+            }
         }
 
         try {

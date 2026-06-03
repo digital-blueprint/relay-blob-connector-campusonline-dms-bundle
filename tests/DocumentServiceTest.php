@@ -149,6 +149,22 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertSame('2', $newNewDoc->getLatestVersion()->getVersionNumber());
     }
 
+    public function testAddDocumentVersionFromMetadata(): void
+    {
+        $document = $this->createTestDocument();
+        $this->assertSame($document->getLatestVersion()->getVersionNumber(), '1');
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $newDoc = $this->documentService->addDocumentVersion($document->getUid(), $file, 'something', ['objectVersion' => ['versionNumber' => '42']]);
+        $this->assertSame($document->getUid(), $newDoc->getUid());
+        $this->assertSame($newDoc->getLatestVersion()->getVersionNumber(), '42');
+
+        $info = $this->documentService->getDocumentVersionInfo($document->getUid(), $newDoc->getLatestVersion()->getUid());
+        $this->assertSame($info->getVersionNumber(), '42');
+
+        $newNewDoc = $this->documentService->getDocument($document->getUid());
+        $this->assertSame('42', $newNewDoc->getLatestVersion()->getVersionNumber());
+    }
+
     public function testRemoveDocumentVersion(): void
     {
         $document = $this->createTestDocument();
