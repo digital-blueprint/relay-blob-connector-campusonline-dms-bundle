@@ -23,6 +23,15 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()->append(BlobApi::getConfigNodeDefinition());
 
+        $treeBuilder->getRootNode()
+            ->children()
+                ->scalarNode('blob_type')
+                    ->defaultValue('document_version')
+                    ->cannotBeEmpty()
+                    ->info('The blob type')
+                ->end()
+            ->end();
+
         return $treeBuilder;
     }
 }

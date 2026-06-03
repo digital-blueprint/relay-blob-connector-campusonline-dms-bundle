@@ -63,6 +63,7 @@ class Kernel extends BaseKernel
                     'ROLE_USER' => 'user.get("MAY_USE_CO_DMS_API")',
                 ],
             ],
+            'blob_type' => 'my_document_version',
         ];
         $testConfig = array_merge($testConfig, BlobApi::getCustomModeConfig(self::TEST_BUCKET_ID));
 

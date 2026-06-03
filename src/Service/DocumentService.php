@@ -23,7 +23,6 @@ use Symfony\Component\Uid\Uuid;
 
 class DocumentService
 {
-    private const DOCUMENT_VERSION_METADATA_TYPE = 'document_version'; // config value?
     private const DOCUMENT_VERSION_METADATA_METADATA_KEY = 'doc_version_metadata';
     private const DOCUMENT_METADATA_METADATA_KEY = 'doc_metadata';
     private const VERSION_NUMBER_METADATA_KEY = 'version';
@@ -32,6 +31,8 @@ class DocumentService
     private ?BlobApi $blobApi = null;
 
     private bool $isHealthy = true;
+
+    private string $blobType;
 
     public function __construct(
         #[Autowire(service: 'service_container')]
@@ -55,6 +56,7 @@ class DocumentService
     public function setConfig(array $config): void
     {
         $this->blobApi = BlobApi::createFromConfig($config, $this->container);
+        $this->blobType = $config['blob_type'];
     }
 
     /**
@@ -279,7 +281,7 @@ class DocumentService
         $blobFile->setFile($uploadedFile);
         $blobFile->setFileName($name);
         $blobFile->setPrefix($document->getUid());
-        $blobFile->setType(self::DOCUMENT_VERSION_METADATA_TYPE);
+        $blobFile->setType($this->blobType);
         $blobFile->setMetadata($metadataEncoded);
 
         try {

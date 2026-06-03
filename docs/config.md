@@ -34,6 +34,8 @@ dbp_relay_blob_connector_campusonline_dms:
             oidc_client_secret:   ~
             # Whether to send file content and metadata checksums for Blob to check
             send_checksums:       true
+    # The blob type
+    blob_type:            document_version
 ```
 
 Minimal example configuration:
