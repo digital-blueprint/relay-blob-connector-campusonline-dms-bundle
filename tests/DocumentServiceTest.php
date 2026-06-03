@@ -149,6 +149,15 @@ class DocumentServiceTest extends ApiTestCase
         $this->assertSame('2', $newNewDoc->getLatestVersion()->getVersionNumber());
     }
 
+    public function testAddDocumentWithMimeTypeFromMetadata(): void
+    {
+        $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
+        $document = $this->documentService->addDocument($file, self::TEST_FILE_NAME, [],
+            ['objectVersion' => ['mediaType' => 'application/pdf']], 'transcript_of_records');
+
+        $this->assertEquals('application/pdf', $document->getLatestVersion()->getMediaType());
+    }
+
     public function testAddDocumentVersionFromMetadata(): void
     {
         $document = $this->createTestDocument();

@@ -297,12 +297,22 @@ class DocumentService
             throw new \RuntimeException(sprintf('encoding file metadata failed: %s', $jsonException->getMessage()));
         }
 
+        // If possible avoid the guessing
+        $mimeType = null;
+        if ($versionMetadata !== null) {
+            $objectVersion = $versionMetadata['objectVersion'] ?? [];
+            if (isset($objectVersion['mediaType'])) {
+                $mimeType = $objectVersion['mediaType'];
+            }
+        }
+
         $blobFile = new BlobFile();
         $blobFile->setFile($uploadedFile);
         $blobFile->setFileName($name);
         $blobFile->setPrefix($document->getUid());
         $blobFile->setType($this->blobType);
         $blobFile->setMetadata($metadataEncoded);
+        $blobFile->setMimeType($mimeType);
 
         try {
             $blobFile = $this->blobApi->addFile($blobFile);
