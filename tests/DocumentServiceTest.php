@@ -68,9 +68,7 @@ class DocumentServiceTest extends ApiTestCase
      */
     public function testCreateDocument(): void
     {
-        $document = new Document();
         $documentMetadata = ['foo' => 'bar'];
-        $document->setMetadata($documentMetadata);
 
         $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
         $documentVersionMetadata = [
@@ -78,8 +76,7 @@ class DocumentServiceTest extends ApiTestCase
         ];
         $documentType = 'transcript_of_records';
 
-        $document = $this->documentService->addDocument(
-            $document, $file, self::TEST_FILE_NAME, $documentVersionMetadata, $documentType);
+        $document = $this->documentService->addDocument($file, self::TEST_FILE_NAME, $documentMetadata, $documentVersionMetadata, $documentType);
 
         $this->assertNotEmpty($document->getUid());
         $this->assertEquals($documentMetadata, $document->getMetaData());
@@ -215,12 +212,10 @@ class DocumentServiceTest extends ApiTestCase
         array $documentVersionMetadata = ['bar' => 'baz'],
         string $documentType = 'transcript_of_records'): Document
     {
-        $document = new Document();
-        $document->setMetadata($documentMetadata);
         $file = new File(__DIR__.'/'.self::TEST_FILE_NAME, true);
 
         return $this->documentService->addDocument(
-            $document, $file, self::TEST_FILE_NAME, $documentVersionMetadata, $documentType);
+            $file, self::TEST_FILE_NAME, $documentMetadata, $documentVersionMetadata, $documentType);
     }
 
     /**

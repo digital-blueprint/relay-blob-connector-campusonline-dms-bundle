@@ -112,10 +112,12 @@ class DocumentService
     /**
      * @throws \Exception
      */
-    public function addDocument(Document $document, File $uploadedFile, string $name,
+    public function addDocument(File $uploadedFile, string $name, array $documentMetadata,
         ?array $documentVersionMetadata = null, ?string $documentType = null): Document
     {
+        $document = new Document();
         $document->setUid((string) Uuid::v7());
+        $document->setMetaData($documentMetadata);
         $document->setLatestVersion($this->createDocumentVersion(
             $document, $uploadedFile, $name, $documentVersionMetadata, $documentType));
 

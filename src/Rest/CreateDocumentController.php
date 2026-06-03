@@ -73,9 +73,6 @@ class CreateDocumentController extends AbstractController
         $addresseeIdObfuscated = $request->request->get('addresseeIdObfuscated');
         assert($addresseeIdObfuscated === null || is_string($addresseeIdObfuscated));
 
-        $document = new Document();
-        $document->setMetaData($metadataArray);
-
         $documentVersionMetadataArray = null;
         $documentVersionMetadata = $request->request->get('doc_version_metadata');
         if ($documentVersionMetadata) {
@@ -87,6 +84,6 @@ class CreateDocumentController extends AbstractController
             }
         }
 
-        return $this->documentService->addDocument($document, $uploadedFile, $name, $documentVersionMetadataArray, $documentType);
+        return $this->documentService->addDocument($uploadedFile, $name, $metadataArray, $documentVersionMetadataArray, $documentType);
     }
 }
