@@ -19,3 +19,4 @@ graph TB
 
 * [Bundle Configuration](./config.md)
 * [Provided API](./api.md)
+* [Blob Storage Layout](./storage.md)
