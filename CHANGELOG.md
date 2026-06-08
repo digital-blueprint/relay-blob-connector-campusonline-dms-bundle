@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v0.3.1
+
+- Make the blob type configurable
+- Derive the DMS version from the metadata version, if available.
+- Derive the blob mime type from the metadata, if available.
+- Docs: Document the internal storage structure
+
 ## v0.3.0
 
 - Update to "CAMPUSonline Object Store API" v3.0.3
