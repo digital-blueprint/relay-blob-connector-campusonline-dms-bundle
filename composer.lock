@@ -9380,16 +9380,16 @@
         },
         {
             "name": "dbp/relay-blob-bundle",
-            "version": "v0.2.6",
+            "version": "v0.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/digital-blueprint/relay-blob-bundle.git",
-                "reference": "37125ce0bce316beab019eaa34e063f2377b8222"
+                "reference": "6201078b00a1054df0b764da9581c569e34a6150"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/37125ce0bce316beab019eaa34e063f2377b8222",
-                "reference": "37125ce0bce316beab019eaa34e063f2377b8222",
+                "url": "https://api.github.com/repos/digital-blueprint/relay-blob-bundle/zipball/6201078b00a1054df0b764da9581c569e34a6150",
+                "reference": "6201078b00a1054df0b764da9581c569e34a6150",
                 "shasum": ""
             },
             "require": {
@@ -9458,9 +9458,9 @@
             "description": "A bundle for file-serving, persisting and managing",
             "support": {
                 "issues": "https://github.com/digital-blueprint/relay-blob-bundle/issues",
-                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.2.6"
+                "source": "https://github.com/digital-blueprint/relay-blob-bundle/tree/v0.2.7"
             },
-            "time": "2026-06-01T11:58:15+00:00"
+            "time": "2026-06-08T12:06:43+00:00"
         },
         {
             "name": "dbp/relay-verity-bundle",
