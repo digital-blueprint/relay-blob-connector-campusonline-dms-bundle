@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- tests: fix example schema with newer blob bundle (schema validation got stricter)
+
 ## v0.3.1
 
 - Make the blob type configurable
