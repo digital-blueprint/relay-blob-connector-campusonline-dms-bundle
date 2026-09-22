@@ -10,7 +10,7 @@
         "api-platform/openapi": "^4.2",
         "api-platform/state": "^4.2",
         "dbp/relay-blob-library": "^0.3.10",
-        "dbp/relay-core-bundle": "^0.1.210",
+        "dbp/relay-core-bundle": "^0.1.251",
         "doctrine/doctrine-bundle": "^2.13",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "symfony/config": "^7.4",

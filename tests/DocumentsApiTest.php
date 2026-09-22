@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
-use Dbp\Relay\CoreBundle\TestUtils\AbstractApiTest;
-use Dbp\Relay\CoreBundle\TestUtils\TestClient;
+use Dbp\Relay\CoreBundle\TestUtils\ApiTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class DocumentsApiTest extends AbstractApiTest
+class DocumentsApiTest extends ApiTestCase
 {
     private const TEST_FILE_NAME = 'test.txt';
     private const TEST_FILE_PATH = __DIR__.'/'.self::TEST_FILE_NAME;
@@ -19,10 +18,9 @@ class DocumentsApiTest extends AbstractApiTest
 
     protected function setUp(): void
     {
-        $this->testClient = new TestClient(self::createClient());
-        $this->testClient->setUpUser(userAttributes: ['MAY_USE_CO_DMS_API' => true]);
-        $this->testClient->getClient()->disableReboot();
-        TestEntityManager::setUpBlobEntityManager($this->testClient->getContainer());
+        $this->createTestClient();
+        $this->login(userAttributes: ['MAY_USE_CO_DMS_API' => true]);
+        TestEntityManager::setUpBlobEntityManager($this->getContainer());
     }
 
     public function testGetDocumentNotExist(): void

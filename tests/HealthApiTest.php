@@ -6,17 +6,15 @@ namespace Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Tests;
 
 use Dbp\Relay\BlobBundle\TestUtils\TestEntityManager;
 use Dbp\Relay\BlobConnectorCampusonlineDmsBundle\Service\DocumentService;
-use Dbp\Relay\CoreBundle\TestUtils\AbstractApiTest;
-use Dbp\Relay\CoreBundle\TestUtils\TestClient;
+use Dbp\Relay\CoreBundle\TestUtils\ApiTestCase;
 
-class HealthApiTest extends AbstractApiTest
+class HealthApiTest extends ApiTestCase
 {
     protected function setUp(): void
     {
-        $this->testClient = new TestClient(self::createClient());
-        $this->testClient->setUpUser(userAttributes: ['MAY_USE_CO_DMS_API' => true]);
-        $this->testClient->getClient()->disableReboot();
-        TestEntityManager::setUpBlobEntityManager($this->testClient->getContainer());
+        $this->createTestClient();
+        $this->login(userAttributes: ['MAY_USE_CO_DMS_API' => true]);
+        TestEntityManager::setUpBlobEntityManager($this->getContainer());
     }
 
     public function testHealthUp()
