@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v0.3.3
+
+- Dependency updates
+
 ## v0.3.2
 
 - tests: fix example schema with newer blob bundle (schema validation got stricter)
