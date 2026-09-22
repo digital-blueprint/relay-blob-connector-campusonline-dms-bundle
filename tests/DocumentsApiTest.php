@@ -106,7 +106,6 @@ class DocumentsApiTest extends ApiTestCase
         $this->assertEquals($file->getSize(), $documentVersion['size']);
         $this->assertEquals(['bar' => 'baz'], $documentVersion['metaData']);
 
-        /** @var \ApiPlatform\Symfony\Bundle\Test\Response $response */
         $response = $this->testClient->get(
             '/co-dms-api/api/documents/'.$documentUid.'/versions/'.$documentVersionUid.'/content',
             options: [
